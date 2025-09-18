@@ -272,13 +272,5 @@ const config = {
   validate: validateConfig
 };
 
-// Export for different environments
-if (typeof module !== 'undefined' && module.exports) {
-  // Node.js environment
-  module.exports = config;
-} else {
-  // Browser environment
-  window.MoMechConfig = config;
-}
-
-export default config;
+// Export configuration
+module.exports = config;

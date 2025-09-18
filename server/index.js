@@ -21,10 +21,12 @@ const vehicleRoutes = require('./routes/vehicles');
 const appointmentRoutes = require('./routes/appointments');
 const inventoryRoutes = require('./routes/inventory');
 const financialRoutes = require('./routes/financial');
+const servicesRoutes = require('./routes/services');
+const workOrderRoutes = require('./routes/work-orders');
 const dashboardRoutes = require('./routes/dashboard');
 
 // Import middleware
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
 
 class Server {
@@ -126,15 +128,17 @@ class Server {
     // API routes
     const apiRouter = express.Router();
     
-    // Authentication routes
+    // Authentication routes (kept for potential future use)
     apiRouter.use('/auth', authRoutes);
     
-    // Resource routes
+    // Resource routes (no authentication required - single user app)
     apiRouter.use('/clients', clientRoutes);
     apiRouter.use('/vehicles', vehicleRoutes);
     apiRouter.use('/appointments', appointmentRoutes);
     apiRouter.use('/inventory', inventoryRoutes);
     apiRouter.use('/financial', financialRoutes);
+    apiRouter.use('/services', servicesRoutes);
+    apiRouter.use('/work-orders', workOrderRoutes);
     apiRouter.use('/dashboard', dashboardRoutes);
 
     // Mount API routes
