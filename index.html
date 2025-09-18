@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoMech - Mechanic Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .sidebar.collapsed {
+            width: 80px;
+        }
+        .sidebar.collapsed .sidebar-text {
+            display: none;
+        }
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        .sidebar.collapsed .logo-icon {
+            display: block;
+        }
+        .logo-icon {
+            display: none;
+        }
+        .main-content {
+            transition: margin-left 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .qr-scanner {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+        .calendar-day:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .calendar-day.today {
+            border: 2px solid #3b82f6;
+        }
+        .calendar-day.has-appointment {
+            background-color: #e0f2fe;
+        }
+        .inventory-low {
+            border-left: 4px solid #ef4444;
+        }
+        .inventory-medium {
+            border-left: 4px solid #f59e0b;
+        }
+        .inventory-good {
+            border-left: 4px solid #10b981;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="sidebar bg-blue-800 text-white w-64 flex flex-col">
+            <div class="p-4 flex items-center justify-between border-b border-blue-700">
+                <div class="flex items-center">
+                    <i data-feather="tool" class="logo-icon w-8 h-8 text-blue-300"></i>
+                    <span class="logo-text ml-2 text-xl font-bold">MoMech</span>
+                </div>
+                <button id="toggleSidebar" class="text-blue-300 hover:text-white">
+                    <i data-feather="chevron-left"></i>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto py-4">
+                <div class="px-4 mb-6">
+                    <div class="relative">
+                        <input type="text" placeholder="Search..." class="w-full bg-blue-700 text-white placeholder-blue-300 rounded-md py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i data-feather="search" class="absolute left-3 top-2.5 text-blue-300"></i>
+                    </div>
+                </div>
+                <nav>
+                    <div class="px-4 mb-2">
+                        <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Dashboard</div>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md bg-blue-700 text-white">
+                            <i data-feather="home" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Overview</span>
+                        </a>
+                    </div>
+                    <div class="px-4 mb-2">
+                        <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Clients</div>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="users" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Client List</span>
+                        </a>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="user-plus" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Add Client</span>
+                        </a>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="qr-code" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">QR Scanner</span>
+                        </a>
+                    </div>
+                    <div class="px-4 mb-2">
+                        <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Vehicles</div>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="car" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Vehicle List</span>
+                        </a>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="plus-circle" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Add Vehicle</span>
+                        </a>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="book-open" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Service History</span>
+                        </a>
+                    </div>
+                    <div class="px-4 mb-2">
+                        <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Appointments</div>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="calendar" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Schedule</span>
+                        </a>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="clock" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Today's Jobs</span>
+                        </a>
+                    </div>
+                    <div class="px-4 mb-2">
+                        <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Inventory</div>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="package" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Parts & Supplies</span>
+                        </a>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="alert-circle" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Low Stock</span>
+                        </a>
+                    </div>
+                    <div class="px-4 mb-2">
+                        <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Financial</div>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="dollar-sign" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Invoices</span>
+                        </a>
+                        <a href="#" class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white">
+                            <i data-feather="credit-card" class="w-4 h-4 mr-3"></i>
+                            <span class="sidebar-text">Payments</span>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-blue-700">
+                <div class="flex items-center">
+                    <img src="http://static.photos/people/200x200/1" alt="User" class="w-10 h-10 rounded-full">
+                    <div class="ml-3 sidebar-text">
+                        <div class="text-sm font-medium">John Mechanic</div>
+                        <div class="text-xs text-blue-300">Owner</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content flex-1 flex flex-col overflow-hidden">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm z-10">
+                <div class="px-6 py-4 flex items-center justify-between">
+                    <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200">
+                            <i data-feather="bell"></i>
+                        </button>
+                        <button class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200">
+                            <i data-feather="message-square"></i>
+                        </button>
+                        <button class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200">
+                            <i data-feather="help-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="dashboard-card bg-white rounded-lg shadow p-6 transition duration-300 ease-in-out">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Today's Appointments</p>
+                                <p class="text-3xl font-semibold text-gray-900">5</p>
+                            </div>
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i data-feather="calendar"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm text-gray-500">
+                                <i data-feather="clock" class="w-4 h-4 mr-1"></i>
+                                <span>Next: 10:30 AM - Oil Change</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card bg-white rounded-lg shadow p-6 transition duration-300 ease-in-out">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Monthly Revenue</p>
+                                <p class="text-3xl font-semibold text-gray-900">$3,450</p>
+                            </div>
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i data-feather="dollar-sign"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm text-gray-500">
+                                <i data-feather="trending-up" class="w-4 h-4 mr-1"></i>
+                                <span>12% from last month</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card bg-white rounded-lg shadow p-6 transition duration-300 ease-in-out">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Active Clients</p>
+                                <p class="text-3xl font-semibold text-gray-900">87</p>
+                            </div>
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i data-feather="users"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm text-gray-500">
+                                <i data-feather="user-plus" class="w-4 h-4 mr-1"></i>
+                                <span>5 new this month</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card bg-white rounded-lg shadow p-6 transition duration-300 ease-in-out">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Low Inventory Items</p>
+                                <p class="text-3xl font-semibold text-gray-900">7</p>
+                            </div>
+                            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                                <i data-feather="alert-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex items-center text-sm text-gray-500">
+                                <i data-feather="package" class="w-4 h-4 mr-1"></i>
+                                <span>Oil filters, brake pads</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left Column -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Calendar Section -->
+                        <div class="bg-white rounded-lg shadow overflow-hidden">
+                            <div class="p-6 border-b border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <h2 class="text-lg font-semibold text-gray-900">Appointments</h2>
+                                    <button class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        <i data-feather="plus" class="w-4 h-4 mr-1 inline"></i> New Appointment
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-7 gap-2 mb-4">
+                                    <div class="text-center font-medium text-gray-500 text-sm">Sun</div>
+                                    <div class="text-center font-medium text-gray-500 text-sm">Mon</div>
+                                    <div class="text-center font-medium text-gray-500 text-sm">Tue</div>
+                                    <div class="text-center font-medium text-gray-500 text-sm">Wed</div>
+                                    <div class="text-center font-medium text-gray-500 text-sm">Thu</div>
+                                    <div class="text-center font-medium text-gray-500 text-sm">Fri</div>
+                                    <div class="text-center font-medium text-gray-500 text-sm">Sat</div>
+                                </div>
+                                <div class="grid grid-cols-7 gap-2">
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        28
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        29
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        30
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        31
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        1
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        2
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        3
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        4
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        5
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        6
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        7
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        8
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        9
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        10
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        11
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        12
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        13
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        14
+                                    </div>
+                                    <div class="calendar-day today has-appointment h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        <span>15</span>
+                                        <span class="text-xs text-blue-600">3 Appts</span>
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        16
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        17
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        18
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        19
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        20
+                                    </div>
+                                    <div class="calendar-day h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer">
+                                        21
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Clients -->
+                        <div class="bg-white rounded-lg shadow overflow-hidden">
+                            <div class="p-6 border-b border-gray-200">
+                                <h2 class="text-lg font-semibold text-gray-900">Recent Clients</h2>
+                            </div>
+                            <div class="divide-y divide-gray-200">
+                                <div class="p-4 hover:bg-gray-50 flex items-center">
+                                    <img src="http://static.photos/people/200x200/2" alt="Client" class="w-10 h-10 rounded-full">
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-medium text-gray-900">Michael Johnson</h3>
+                                            <span class="text-xs text-gray-500">Yesterday</span>
+                                        </div>
+                                        <p class="text-sm text-gray-500">2018 Toyota Camry - Oil Change</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 hover:bg-gray-50 flex items-center">
+                                    <img src="http://static.photos/people/200x200/3" alt="Client" class="w-10 h-10 rounded-full">
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-medium text-gray-900">Sarah Williams</h3>
+                                            <span class="text-xs text-gray-500">2 days ago</span>
+                                        </div>
+                                        <p class="text-sm text-gray-500">2015 Honda CR-V - Brake Service</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 hover:bg-gray-50 flex items-center">
+                                    <img src="http://static.photos/people/200x200/4" alt="Client" class="w-10 h-10 rounded-full">
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-medium text-gray-900">Robert Davis</h3>
+                                            <span class="text-xs text-gray-500">3 days ago</span>
+                                        </div>
+                                        <p class="text-sm text-gray-500">2017 Ford F-150 - Tire Rotation</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 hover:bg-gray-50 flex items-center">
+                                    <img src="http://static.photos/people/200x200/5" alt="Client" class="w-10 h-10 rounded-full">
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-medium text-gray-900">Jennifer Miller</h3>
+                                            <span class="text-xs text-gray-500">5 days ago</span>
+                                        </div>
+                                        <p class="text-sm text-gray-500">2020 Subaru Outback - 30K Service</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 border-t border-gray-200 text-center">
+                                <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500">View all clients</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Quick Actions -->
+                        <div class="bg-white rounded-lg shadow overflow-hidden">
+                            <div class="p-6 border-b border-gray-200">
+                                <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
+                            </div>
+                            <div class="p-6 grid grid-cols-2 gap-4">
+                                <button class="p-4 bg-blue-50 rounded-lg flex flex-col items-center justify-center text-blue-600 hover:bg-blue-100 transition">
+                                    <i data-feather="user-plus" class="w-6 h-6 mb-2"></i>
+                                    <span class="text-sm font-medium">Add Client</span>
+                                </button>
+                                <button class="p-4 bg-green-50 rounded-lg flex flex-col items-center justify-center text-green-600 hover:bg-green-100 transition">
+                                    <i data-feather="car" class="w-6 h-6 mb-2"></i>
+                                    <span class="text-sm font-medium">Add Vehicle</span>
+                                </button>
+                                <button class="p-4 bg-purple-50 rounded-lg flex flex-col items-center justify-center text-purple-600 hover:bg-purple-100 transition">
+                                    <i data-feather="calendar" class="w-6 h-6 mb-2"></i>
+                                    <span class="text-sm font-medium">New Appointment</span>
+                                </button>
+                                <button class="p-4 bg-yellow-50 rounded-lg flex flex-col items-center justify-center text-yellow-600 hover:bg-yellow-100 transition">
+                                    <i data-feather="file-text" class="w-6 h-6 mb-2"></i>
+                                    <span class="text-sm font-medium">Create Invoice</span>
+                                </button>
+                                <button class="p-4 bg-red-50 rounded-lg flex flex-col items-center justify-center text-red-600 hover:bg-red-100 transition">
+                                    <i data-feather="package" class="w-6 h-6 mb-2"></i>
+                                    <span class="text-sm font-medium">Add Inventory</span>
+                                </button>
+                                <button class="p-4 bg-indigo-50 rounded-lg flex flex-col items-center justify-center text-indigo-600 hover:bg-indigo-100 transition">
+                                    <i data-feather="qr-code" class="w-6 h-6 mb-2"></i>
+                                    <span class="text-sm font-medium">Scan QR</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Low Inventory -->
+                        <div class="bg-white rounded-lg shadow overflow-hidden">
+                            <div class="p-6 border-b border-gray-200">
+                                <h2 class="text-lg font-semibold text-gray-900">Low Inventory</h2>
+                            </div>
+                            <div class="divide-y divide-gray-200">
+                                <div class="p-4 hover:bg-gray-50 flex items-center inventory-low">
+                                    <div class="flex-shrink-0">
+                                        <i data-feather="alert-circle" class="w-5 h-5 text-red-500"></i>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-medium text-gray-900">Oil Filter - Toyota</h3>
+                                            <span class="text-xs font-semibold text-red-500">2 left</span>
+                                        </div>
+                                        <p class="text-sm text-gray-500">Part #TO-1234</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 hover:bg-gray-50 flex items-center inventory-low">
+                                    <div class="flex-shrink-0">
+                                        <i data-feather="alert-circle" class="w-5 h-5 text-red-500"></i>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-medium text-gray-900">Brake Pads - Front</h3>
+                                            <span class="text-xs font-semibold text-red-500">1 left</span>
+                                        </div>
+                                        <p class="text-sm text-gray-500">Part #BP-F456</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 hover:bg-gray-50 flex items-center inventory-medium">
+                                    <div class="flex-shrink-0">
+                                        <i data-feather="alert-circle" class="w-5 h-5 text-yellow-500"></i>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-medium text-gray-900">5W-30 Synthetic Oil</h3>
+                                            <span class="text-xs font-semibold text-yellow-500">4 left</span>
+                                        </div>
+                                        <p class="text-sm text-gray-500">Part #OIL-5W30</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 hover:bg-gray-50 flex items-center inventory-medium">
+                                    <div class="flex-shrink-0">
+                                        <i data-feather="alert-circle" class="w-5 h-5 text-yellow-500"></i>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-medium text-gray-900">Air Filter</h3>
+                                            <span class="text-xs font-semibold text-yellow-500">5 left</span>
+                                        </div>
+                                        <p class="text-sm text-gray-500">Part #AF-789</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 border-t border-gray-200 text-center">
+                                <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500">View all inventory</a>
+                            </div>
+                        </div>
+
+                        <!-- QR Scanner -->
+                        <div class="qr-scanner rounded-lg shadow overflow-hidden">
+                            <div class="p-6 border-b border-blue-700">
+                                <h2 class="text-lg font-semibold text-white">QR Scanner</h2>
+                            </div>
+                            <div class="p-6 flex flex-col items-center">
+                                <div class="w-full h-48 bg-black rounded-md mb-4 flex items-center justify-center">
+                                    <i data-feather="camera" class="w-12 h-12 text-blue-300"></i>
+                                </div>
+                                <button class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium flex items-center justify-center">
+                                    <i data-feather="maximize" class="w-4 h-4 mr-2"></i> Open Scanner
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Toggle sidebar
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+            document.querySelector('.main-content').classList.toggle('ml-64');
+            document.querySelector('.main-content').classList.toggle('ml-20');
+            
+            const icon = this.querySelector('i');
+            if (document.querySelector('.sidebar').classList.contains('collapsed')) {
+                icon.setAttribute('data-feather', 'chevron-right');
+            } else {
+                icon.setAttribute('data-feather', 'chevron-left');
+            }
+            feather.replace();
+        });
+
+        // Replace all feather icons
+        feather.replace();
+
+        // Calendar day click handler
+        document.querySelectorAll('.calendar-day').forEach(day => {
+            day.addEventListener('click', function() {
+                // Remove active class from all days
+                document.querySelectorAll('.calendar-day').forEach(d => {
+                    d.classList.remove('bg-blue-100', 'text-blue-800');
+                });
+                
+                // Add active class to clicked day
+                this.classList.add('bg-blue-100', 'text-blue-800');
+            });
+        });
+
+        // Simulate loading dashboard cards
+        setTimeout(() => {
+            document.querySelectorAll('.dashboard-card').forEach(card => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            });
+        }, 300);
+    </script>
+</body>
+</html>

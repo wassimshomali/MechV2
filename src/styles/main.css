@@ -1,0 +1,455 @@
+/**
+ * Main CSS file for MoMech
+ * This file imports Tailwind CSS and defines custom styles
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import centralized color variables */
+@import '../config/colors.css';
+
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-sans antialiased text-gray-900 bg-gray-50;
+    line-height: 1.6;
+  }
+  
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
+  
+  /* Focus styles */
+  *:focus {
+    outline: none;
+  }
+  
+  .focus-visible {
+    @apply ring-2 ring-primary-500 ring-offset-2;
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Sidebar styles */
+  .sidebar {
+    @apply bg-primary-800 text-white w-64 flex flex-col transition-all duration-300 ease-in-out;
+  }
+  
+  .sidebar.collapsed {
+    @apply w-20;
+  }
+  
+  .sidebar.collapsed .sidebar-text {
+    @apply hidden;
+  }
+  
+  .sidebar.collapsed .logo-text {
+    @apply hidden;
+  }
+  
+  .sidebar.collapsed .logo-icon {
+    @apply block;
+  }
+  
+  .logo-icon {
+    @apply hidden;
+  }
+  
+  /* Main content area */
+  .main-content {
+    @apply flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out;
+  }
+  
+  /* Dashboard cards */
+  .dashboard-card {
+    @apply bg-white rounded-lg shadow p-6 transition-all duration-300 ease-in-out cursor-pointer;
+  }
+  
+  .dashboard-card:hover {
+    @apply transform -translate-y-1 shadow-lg;
+  }
+  
+  /* Calendar styles */
+  .calendar-day {
+    @apply h-16 p-1 rounded-md border border-transparent flex flex-col items-center justify-center text-sm cursor-pointer transition-colors duration-200;
+  }
+  
+  .calendar-day:hover {
+    @apply bg-primary-500 text-white;
+  }
+  
+  .calendar-day.today {
+    @apply border-2 border-primary-500;
+  }
+  
+  .calendar-day.has-appointment {
+    @apply bg-primary-50 text-primary-700;
+  }
+  
+  .calendar-day.selected {
+    @apply bg-primary-100 text-primary-800;
+  }
+  
+  /* Inventory status indicators */
+  .inventory-item {
+    @apply border-l-4;
+  }
+  
+  .inventory-low {
+    @apply border-l-error-500;
+  }
+  
+  .inventory-medium {
+    @apply border-l-warning-500;
+  }
+  
+  .inventory-good {
+    @apply border-l-success-500;
+  }
+  
+  /* QR Scanner styles */
+  .qr-scanner {
+    background: linear-gradient(135deg, theme('colors.gray.600') 0%, theme('colors.gray.700') 100%);
+  }
+  
+  /* Form styles */
+  .form-group {
+    @apply mb-4;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-2;
+  }
+  
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500;
+  }
+  
+  .form-input.error {
+    @apply border-error-500 focus:ring-error-500 focus:border-error-500;
+  }
+  
+  .form-error {
+    @apply mt-1 text-sm text-error-600;
+  }
+  
+  .form-help {
+    @apply mt-1 text-sm text-gray-500;
+  }
+  
+  /* Modal styles */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+  }
+  
+  .modal-content {
+    @apply bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6;
+  }
+  
+  .modal-header {
+    @apply flex items-center justify-between mb-4;
+  }
+  
+  .modal-title {
+    @apply text-lg font-semibold text-gray-900;
+  }
+  
+  .modal-close {
+    @apply text-gray-400 hover:text-gray-600 transition-colors duration-200;
+  }
+  
+  .modal-body {
+    @apply mb-6;
+  }
+  
+  .modal-footer {
+    @apply flex justify-end space-x-3;
+  }
+  
+  /* Notification styles */
+  .notification {
+    @apply fixed top-4 right-4 max-w-sm w-full bg-white rounded-lg shadow-lg border-l-4 p-4 z-50;
+    animation: slideInRight 0.3s ease-out;
+  }
+  
+  .notification.success {
+    @apply border-l-success-500;
+  }
+  
+  .notification.error {
+    @apply border-l-error-500;
+  }
+  
+  .notification.warning {
+    @apply border-l-warning-500;
+  }
+  
+  .notification.info {
+    @apply border-l-info-500;
+  }
+  
+  /* Loading spinner */
+  .spinner {
+    @apply inline-block w-6 h-6 border-2 border-gray-300 border-t-primary-600 rounded-full animate-spin;
+  }
+  
+  /* Data table styles */
+  .data-table {
+    @apply w-full bg-white rounded-lg shadow overflow-hidden;
+  }
+  
+  .data-table th {
+    @apply px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+  }
+  
+  .data-table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+  }
+  
+  .data-table tr:nth-child(even) {
+    @apply bg-gray-50;
+  }
+  
+  .data-table tr:hover {
+    @apply bg-gray-100;
+  }
+  
+  /* Pagination styles */
+  .pagination {
+    @apply flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6;
+  }
+  
+  .pagination-info {
+    @apply text-sm text-gray-700;
+  }
+  
+  .pagination-nav {
+    @apply flex space-x-1;
+  }
+  
+  .pagination-btn {
+    @apply px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+  }
+  
+  .pagination-btn.active {
+    @apply bg-primary-600 text-white border-primary-600;
+  }
+  
+  .pagination-btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+  
+  /* Search and filter styles */
+  .search-box {
+    @apply relative;
+  }
+  
+  .search-input {
+    @apply w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500;
+  }
+  
+  .search-icon {
+    @apply absolute left-3 top-2.5 text-gray-400;
+  }
+  
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge.success {
+    @apply bg-success-100 text-success-800;
+  }
+  
+  .badge.error {
+    @apply bg-error-100 text-error-800;
+  }
+  
+  .badge.warning {
+    @apply bg-warning-100 text-warning-800;
+  }
+  
+  .badge.info {
+    @apply bg-info-100 text-info-800;
+  }
+  
+  .badge.neutral {
+    @apply bg-gray-100 text-gray-800;
+  }
+  
+  /* Tooltip styles */
+  .tooltip {
+    @apply relative inline-block;
+  }
+  
+  .tooltip .tooltip-text {
+    @apply invisible absolute z-10 w-32 bg-gray-900 text-white text-xs rounded py-1 px-2 bottom-full left-1/2 transform -translate-x-1/2 -translate-y-1 opacity-0 transition-opacity duration-300;
+  }
+  
+  .tooltip:hover .tooltip-text {
+    @apply visible opacity-100;
+  }
+  
+  /* Progress bar styles */
+  .progress-bar {
+    @apply w-full bg-gray-200 rounded-full h-2;
+  }
+  
+  .progress-fill {
+    @apply h-2 bg-primary-600 rounded-full transition-all duration-300 ease-in-out;
+  }
+  
+  /* Card layouts */
+  .card-grid {
+    @apply grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+  
+  .card-list {
+    @apply space-y-4;
+  }
+  
+  /* Responsive utilities */
+  .mobile-only {
+    @apply block sm:hidden;
+  }
+  
+  .desktop-only {
+    @apply hidden sm:block;
+  }
+  
+  /* Print styles */
+  @media print {
+    .no-print {
+      @apply hidden;
+    }
+    
+    .print-break {
+      page-break-after: always;
+    }
+    
+    .print-avoid-break {
+      page-break-inside: avoid;
+    }
+  }
+}
+
+/* Utility styles */
+@layer utilities {
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+  }
+  
+  .animate-bounce-gentle {
+    animation: bounceGentle 2s infinite;
+  }
+  
+  /* Custom keyframes */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes bounceGentle {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  
+  /* Glassmorphism utilities */
+  .glass {
+    @apply backdrop-blur-sm bg-white bg-opacity-70 border border-white border-opacity-20;
+  }
+  
+  .glass-dark {
+    @apply backdrop-blur-sm bg-gray-900 bg-opacity-70 border border-gray-700 border-opacity-20;
+  }
+  
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  
+  /* Layout utilities */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Aspect ratio utilities */
+  .aspect-square {
+    aspect-ratio: 1 / 1;
+  }
+  
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+  
+  .aspect-photo {
+    aspect-ratio: 4 / 3;
+  }
+}
