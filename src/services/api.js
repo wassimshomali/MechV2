@@ -47,9 +47,10 @@ class ApiService {
   getHeaders(customHeaders = {}) {
     const headers = { ...this.defaultHeaders, ...customHeaders };
     
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
-    }
+    // No authentication required for single-user app
+    // if (this.token) {
+    //   headers.Authorization = `Bearer ${this.token}`;
+    // }
 
     return headers;
   }
@@ -101,8 +102,9 @@ class ApiService {
     // HTTP status errors
     switch (error.status) {
       case config.HTTP_STATUS.UNAUTHORIZED:
-        this.clearToken();
-        window.dispatchEvent(new CustomEvent('auth:logout'));
+        // No auth handling needed for single-user app
+        // this.clearToken();
+        // window.dispatchEvent(new CustomEvent('auth:logout'));
         throw new Error(config.ERROR_MESSAGES.UNAUTHORIZED);
       
       case config.HTTP_STATUS.NOT_FOUND:
@@ -310,18 +312,18 @@ apiService.request = async function(method, endpoint, options = {}) {
       console.error(`❌ ${method} ${endpoint} - ${Date.now() - requestStart}ms`, error);
     }
     
-    // Attempt token refresh on 401 errors
-    if (error.status === 401 && endpoint !== config.API_CONFIG.AUTH.REFRESH) {
-      try {
-        await apiService.refreshToken();
-        // Retry original request with new token
-        return originalRequest(method, endpoint, options);
-      } catch (refreshError) {
-        // Refresh failed, redirect to login
-        window.dispatchEvent(new CustomEvent('auth:logout'));
-        throw refreshError;
-      }
-    }
+    // No authentication handling needed for single-user app
+    // if (error.status === 401 && endpoint !== config.API_CONFIG.AUTH.REFRESH) {
+    //   try {
+    //     await apiService.refreshToken();
+    //     // Retry original request with new token
+    //     return originalRequest(method, endpoint, options);
+    //   } catch (refreshError) {
+    //     // Refresh failed, redirect to login
+    //     window.dispatchEvent(new CustomEvent('auth:logout'));
+    //     throw refreshError;
+    //   }
+    // }
     
     throw error;
   }

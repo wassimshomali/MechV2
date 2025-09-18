@@ -153,24 +153,14 @@ class DatabaseConnection {
       const filePath = path.join(this.migrationPath, filename);
       const sql = await fs.readFile(filePath, 'utf8');
 
-      // Execute migration in a transaction
-      await this.run('BEGIN TRANSACTION');
-      
-      // Split and execute multiple statements
-      const statements = sql.split(';').filter(stmt => stmt.trim());
-      for (const statement of statements) {
-        if (statement.trim()) {
-          await this.run(statement);
-        }
-      }
+      // Execute migration using exec for multiple statements
+      await this.exec(sql);
 
       // Record migration
       await this.run(
         'INSERT INTO migrations (filename) VALUES (?)',
         [filename]
       );
-
-      await this.run('COMMIT');
       logger.info(`Migration executed: ${filename}`);
 
     } catch (error) {
@@ -219,13 +209,8 @@ class DatabaseConnection {
       const filePath = path.join(this.seedPath, filename);
       const sql = await fs.readFile(filePath, 'utf8');
 
-      // Execute seed statements
-      const statements = sql.split(';').filter(stmt => stmt.trim());
-      for (const statement of statements) {
-        if (statement.trim()) {
-          await this.run(statement);
-        }
-      }
+      // Execute seed using exec for multiple statements
+      await this.exec(sql);
 
       logger.info(`Seed executed: ${filename}`);
 
@@ -248,6 +233,21 @@ class DatabaseConnection {
             lastID: this.lastID, 
             changes: this.changes 
           });
+        }
+      });
+    });
+  }
+
+  /**
+   * Execute multiple SQL statements
+   */
+  async exec(sql) {
+    return new Promise((resolve, reject) => {
+      this.db.exec(sql, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
         }
       });
     });
