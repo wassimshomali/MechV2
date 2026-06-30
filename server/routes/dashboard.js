@@ -16,7 +16,6 @@ const router = express.Router();
  */
 router.get('/stats', asyncHandler(async (req, res) => {
   const today = new Date().toISOString().split('T')[0];
-  const thisMonth = new Date().toISOString().slice(0, 7);
   
   // Get today's appointments
   const todayAppointments = await dbConnection.get(`
@@ -25,12 +24,19 @@ router.get('/stats', asyncHandler(async (req, res) => {
     WHERE appointment_date = ? AND status != 'cancelled'
   `, [today]);
 
-  // Get monthly revenue
+  // Get upcoming appointments (today and future, not completed/cancelled)
+  const upcomingAppointments = await dbConnection.get(`
+    SELECT COUNT(*) as count
+    FROM appointments 
+    WHERE appointment_date >= ? AND status NOT IN ('cancelled', 'completed')
+  `, [today]);
+
+  // Get rolling 30-day revenue from paid invoices
   const monthlyRevenue = await dbConnection.get(`
     SELECT COALESCE(SUM(total_amount), 0) as revenue
     FROM invoices 
-    WHERE strftime('%Y-%m', invoice_date) = ? AND status = 'paid'
-  `, [thisMonth]);
+    WHERE invoice_date >= date('now', '-30 days') AND status = 'paid'
+  `);
 
   // Get active clients count
   const activeClients = await dbConnection.get(`
@@ -60,23 +66,22 @@ router.get('/stats', asyncHandler(async (req, res) => {
     LIMIT 1
   `, [today]);
 
-  // Calculate revenue growth
-  const lastMonth = new Date();
-  lastMonth.setMonth(lastMonth.getMonth() - 1);
-  const lastMonthStr = lastMonth.toISOString().slice(0, 7);
-  
-  const lastMonthRevenue = await dbConnection.get(`
+  // Calculate revenue growth (previous 30-day window vs current)
+  const previousPeriodRevenue = await dbConnection.get(`
     SELECT COALESCE(SUM(total_amount), 0) as revenue
     FROM invoices 
-    WHERE strftime('%Y-%m', invoice_date) = ? AND status = 'paid'
-  `, [lastMonthStr]);
+    WHERE invoice_date >= date('now', '-60 days')
+      AND invoice_date < date('now', '-30 days')
+      AND status = 'paid'
+  `);
 
-  const revenueGrowth = lastMonthRevenue.revenue > 0 
-    ? ((monthlyRevenue.revenue - lastMonthRevenue.revenue) / lastMonthRevenue.revenue * 100).toFixed(1)
+  const revenueGrowth = previousPeriodRevenue.revenue > 0 
+    ? ((monthlyRevenue.revenue - previousPeriodRevenue.revenue) / previousPeriodRevenue.revenue * 100).toFixed(1)
     : 0;
 
   res.json({
     todayAppointments: todayAppointments.count,
+    upcomingAppointments: upcomingAppointments.count,
     monthlyRevenue: monthlyRevenue.revenue,
     revenueGrowth: parseFloat(revenueGrowth),
     activeClients: activeClients.count,

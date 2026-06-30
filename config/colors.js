@@ -191,13 +191,5 @@ const colorUtils = {
   }
 };
 
-// Export for different environments
-if (typeof module !== 'undefined' && module.exports) {
-  // Node.js environment
-  module.exports = { colors, cssVariables, colorUtils };
-} else {
-  // Browser environment
-  window.MoMechColors = { colors, cssVariables, colorUtils };
-}
-
-export { colors, cssVariables, colorUtils };
+// Node.js export (used by Tailwind config)
+module.exports = { colors, cssVariables, colorUtils };

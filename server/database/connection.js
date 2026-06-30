@@ -36,8 +36,8 @@ class DatabaseConnection {
       // Run migrations
       await this.runMigrations();
 
-      // Seed database if in development
-      if (config.ENVIRONMENT === 'development') {
+      // Seed database in development and test
+      if (config.ENVIRONMENT === 'development' || config.ENVIRONMENT === 'test') {
         await this.runSeeds();
       }
 
@@ -153,24 +153,14 @@ class DatabaseConnection {
       const filePath = path.join(this.migrationPath, filename);
       const sql = await fs.readFile(filePath, 'utf8');
 
-      // Execute migration in a transaction
-      await this.run('BEGIN TRANSACTION');
-      
-      // Split and execute multiple statements
-      const statements = sql.split(';').filter(stmt => stmt.trim());
-      for (const statement of statements) {
-        if (statement.trim()) {
-          await this.run(statement);
-        }
-      }
+      // Execute migration using exec for multiple statements
+      await this.exec(sql);
 
       // Record migration
       await this.run(
         'INSERT INTO migrations (filename) VALUES (?)',
         [filename]
       );
-
-      await this.run('COMMIT');
       logger.info(`Migration executed: ${filename}`);
 
     } catch (error) {
@@ -185,6 +175,19 @@ class DatabaseConnection {
    */
   async runSeeds() {
     try {
+      await this.run(`
+        CREATE TABLE IF NOT EXISTS seeds (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          filename TEXT NOT NULL UNIQUE,
+          executed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      const executedSeeds = await this.all(
+        'SELECT filename FROM seeds ORDER BY id'
+      );
+      const executedFiles = executedSeeds.map(s => s.filename);
+
       let seedFiles = [];
       try {
         const files = await fs.readdir(this.seedPath);
@@ -197,14 +200,15 @@ class DatabaseConnection {
       }
 
       for (const filename of seedFiles) {
-        await this.executeSeed(filename);
+        if (!executedFiles.includes(filename)) {
+          await this.executeSeed(filename);
+        }
       }
 
-      logger.info(`Seeds completed. Total: ${seedFiles.length}`);
+      logger.info(`Seeds completed. Total: ${seedFiles.length}, Executed: ${seedFiles.length - executedFiles.length}`);
 
     } catch (error) {
       logger.error('Seeding failed:', error);
-      // Don't throw error for seeds in development
       if (config.ENVIRONMENT !== 'development') {
         throw error;
       }
@@ -219,13 +223,12 @@ class DatabaseConnection {
       const filePath = path.join(this.seedPath, filename);
       const sql = await fs.readFile(filePath, 'utf8');
 
-      // Execute seed statements
-      const statements = sql.split(';').filter(stmt => stmt.trim());
-      for (const statement of statements) {
-        if (statement.trim()) {
-          await this.run(statement);
-        }
-      }
+      await this.exec(sql);
+
+      await this.run(
+        'INSERT INTO seeds (filename) VALUES (?)',
+        [filename]
+      );
 
       logger.info(`Seed executed: ${filename}`);
 
@@ -248,6 +251,21 @@ class DatabaseConnection {
             lastID: this.lastID, 
             changes: this.changes 
           });
+        }
+      });
+    });
+  }
+
+  /**
+   * Execute multiple SQL statements
+   */
+  async exec(sql) {
+    return new Promise((resolve, reject) => {
+      this.db.exec(sql, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
         }
       });
     });

@@ -5,7 +5,7 @@
 
 const API_CONFIG = {
   // Base configuration
-  BASE_URL: process.env.API_BASE_URL || 'http://localhost:3001',
+  BASE_URL: (typeof process !== 'undefined' && process.env.API_BASE_URL) || 'http://localhost:3001',
   API_VERSION: 'v1',
   TIMEOUT: 10000, // 10 seconds
   
@@ -263,13 +263,5 @@ const config = {
   UPLOAD_LIMITS
 };
 
-// Export for different environments
-if (typeof module !== 'undefined' && module.exports) {
-  // Node.js environment
-  module.exports = config;
-} else {
-  // Browser environment
-  window.MoMechAPI = config;
-}
-
+// Browser ESM export (used by frontend services)
 export default config;
