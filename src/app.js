@@ -106,6 +106,7 @@ class MoMechApp {
         // Service routes
         this.router.addRoute('/services', () => this.loadPage('services'));
         this.router.addRoute('/services/new', () => this.loadPage('services', 'new'));
+        this.router.addRoute('/services/:id/edit', (params) => this.loadPage('services', 'edit', params));
         this.router.addRoute('/services/:id', (params) => this.loadPage('services', 'detail', params));
         
         // 404 handler
@@ -207,14 +208,16 @@ class MoMechApp {
                     break;
                     
                 case 'financial':
-                    const { InvoiceList, InvoiceForm, PaymentList, FinancialReports } = await import('./components/financial/index.js');
+                    const { InvoiceList, InvoiceForm, InvoiceDetail, PaymentList, FinancialReports } = await import('./components/financial/index.js');
                     switch (subPage) {
                         case 'invoices':
                             PageComponent = InvoiceList;
                             break;
                         case 'invoices-new':
-                        case 'invoices-edit':
                             PageComponent = InvoiceForm;
+                            break;
+                        case 'invoices-detail':
+                            PageComponent = InvoiceDetail;
                             break;
                         case 'payments':
                             PageComponent = PaymentList;
@@ -253,7 +256,6 @@ class MoMechApp {
                             PageComponent = ServiceList;
                     }
                     break;
-                    
                 case '404':
                 default:
                     PageComponent = class {

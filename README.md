@@ -37,6 +37,8 @@ npm run dev
 
 Open http://localhost:3000 in your browser. The backend API runs at http://localhost:3001.
 
+Styles are built from Tailwind via `src/styles/main.css` → `dist/styles.css` (the dev script rebuilds CSS automatically on change).
+
 ## Project Structure
 
 ```

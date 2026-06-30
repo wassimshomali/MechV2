@@ -28,4 +28,4 @@ jobs:
         run: npm test
 
       - name: Build CSS
-        run: npx tailwindcss -i ./src/styles/main.css -o ./dist/styles.css
+        run: npm run build:css:once

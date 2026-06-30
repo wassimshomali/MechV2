@@ -109,20 +109,17 @@ export class FinancialService {
         const response = await apiService.get(`${this.baseEndpoint}/reports/revenue`, params);
         return {
             ...response,
-            data: response.data.map(item => objectToCamelCase(item))
+            data: (response.data || []).map(item => objectToCamelCase(item)),
+            summary: response.summary ? objectToCamelCase(response.summary) : null,
         };
     }
-    
-    /**
-     * Get outstanding invoices report
-     * @param {object} params - Query parameters
-     * @returns {Promise<object>} - Outstanding invoices report
-     */
+
     async getOutstandingReport(params = {}) {
         const response = await apiService.get(`${this.baseEndpoint}/reports/outstanding`, params);
         return {
             ...response,
-            invoices: response.invoices.map(invoice => objectToCamelCase(invoice))
+            invoices: (response.invoices || []).map(invoice => objectToCamelCase(invoice)),
+            summary: response.summary ? objectToCamelCase(response.summary) : null,
         };
     }
 }

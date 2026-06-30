@@ -4,125 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoMech - Mechanic Management System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="dist/styles.css">
+    <link rel="stylesheet" href="src/config/colors.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
-    <link rel="stylesheet" href="src/config/colors.css">
-    <style>
-        .sidebar {
-            transition: all 0.3s ease;
-        }
-        .sidebar.collapsed {
-            width: 80px;
-        }
-        .sidebar.collapsed .sidebar-text {
-            display: none;
-        }
-        .sidebar.collapsed .logo-text {
-            display: none;
-        }
-        .sidebar.collapsed .logo-icon {
-            display: block;
-        }
-        .logo-icon {
-            display: none;
-        }
-        .main-content {
-            transition: margin-left 0.3s ease;
-        }
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        .qr-scanner {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-        }
-        .calendar-day:hover {
-            background-color: #3b82f6;
-            color: white;
-        }
-        .calendar-day.today {
-            border: 2px solid #3b82f6;
-        }
-        .calendar-day.has-appointment {
-            background-color: #e0f2fe;
-        }
-        .inventory-low {
-            border-left: 4px solid #ef4444;
-        }
-        .inventory-medium {
-            border-left: 4px solid #f59e0b;
-        }
-        .inventory-good {
-            border-left: 4px solid #10b981;
-        }
-        .fade-in {
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
 </head>
 <body class="bg-gray-50">
     <div id="app" class="flex h-screen overflow-hidden">
-        <!-- Sidebar will be loaded here -->
         <div id="sidebar-container"></div>
-        
-        <!-- Main content area -->
         <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header will be loaded here -->
             <div id="header-container"></div>
-            
-            <!-- Page content will be loaded here -->
             <div id="page-content" class="flex-1 overflow-y-auto p-6"></div>
         </div>
     </div>
     
-    <!-- Modals container -->
     <div id="modals-container"></div>
-    
-    <!-- Notification container -->
     <div id="notification-container" class="fixed top-4 right-4 z-50"></div>
     
-    <!-- Loading overlay -->
     <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg p-6 flex items-center space-x-4">
-            <div class="loading"></div>
+            <div class="page-loader"></div>
             <span class="text-gray-700">Loading...</span>
         </div>
     </div>
     
-    <!-- Scripts -->
     <script>
-        // Initialize AOS animations
-        AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
-            once: true
-        });
+        AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
 
-        // Replace all feather icons (will be called by components)
         function replaceFeatherIcons() {
-            feather.replace();
+            if (typeof feather !== 'undefined') feather.replace();
         }
         
-        // Global loading functions
         window.showLoading = function() {
             document.getElementById('loading-overlay').classList.remove('hidden');
         };
@@ -131,7 +44,6 @@
             document.getElementById('loading-overlay').classList.add('hidden');
         };
         
-        // Global notification function
         window.showNotification = function(message, type = 'info', duration = 5000) {
             const container = document.getElementById('notification-container');
             const notification = document.createElement('div');
@@ -148,17 +60,10 @@
             
             container.appendChild(notification);
             
-            // Animate in
-            setTimeout(() => {
-                notification.classList.remove('translate-x-full');
-            }, 100);
-            
-            // Auto remove
+            setTimeout(() => notification.classList.remove('translate-x-full'), 100);
             setTimeout(() => {
                 notification.classList.add('translate-x-full');
-                setTimeout(() => {
-                    container.removeChild(notification);
-                }, 300);
+                setTimeout(() => container.removeChild(notification), 300);
             }, duration);
         };
     </script>

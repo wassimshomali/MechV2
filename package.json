@@ -4,7 +4,9 @@
   "description": "Digital transformation tool for small garage mechanics - ERP/CRM system",
   "main": "server/index.js",
   "scripts": {
-    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "dev": "npm run build:css:once && concurrently \"npm run server:dev\" \"npm run client:dev\" \"npm run dev:css\"",
+    "dev:css": "tailwindcss -i ./src/styles/main.css -o ./dist/styles.css --watch",
+    "build:css:once": "tailwindcss -i ./src/styles/main.css -o ./dist/styles.css --minify",
     "start": "node server/index.js",
     "server:dev": "nodemon server/index.js",
     "client:dev": "live-server --port=3000 --entry-file=index.html",
