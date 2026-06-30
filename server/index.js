@@ -90,12 +90,12 @@ class Server {
       limit: config.PERFORMANCE.MAX_REQUEST_SIZE 
     }));
 
-    // Static file serving
-    this.app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
-    this.app.use('/assets', express.static(path.join(__dirname, '../public')));
-    
-    // Serve the main application
-    this.app.use(express.static(path.join(__dirname, '../')));
+    // Static file serving (scoped directories only)
+    const rootDir = path.join(__dirname, '../');
+    this.app.use('/src', express.static(path.join(rootDir, 'src')));
+    this.app.use('/dist', express.static(path.join(rootDir, 'dist')));
+    this.app.use('/uploads', express.static(path.join(rootDir, 'public/uploads')));
+    this.app.use('/assets', express.static(path.join(rootDir, 'public')));
 
     // Request logging
     this.app.use((req, res, next) => {

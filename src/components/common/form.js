@@ -5,6 +5,7 @@
 
 import validator from '../../utils/validation.js';
 import { debounce } from '../../utils/helpers.js';
+import { Modal } from './modal.js';
 
 export class Form {
     constructor(options = {}) {

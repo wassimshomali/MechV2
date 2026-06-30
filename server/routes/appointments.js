@@ -169,6 +169,79 @@ router.get('/', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * Get today's appointments
+ * GET /api/v1/appointments/today
+ */
+router.get('/today', asyncHandler(async (req, res) => {
+  const today = new Date().toISOString().split('T')[0];
+  
+  const appointments = await dbConnection.all(`
+    SELECT 
+      a.*,
+      c.first_name || ' ' || c.last_name as client_name,
+      c.phone as client_phone,
+      v.make || ' ' || v.model || ' (' || v.year || ')' as vehicle_info,
+      v.license_plate,
+      s.name as service_name,
+      u.first_name || ' ' || u.last_name as assigned_mechanic
+    FROM appointments a
+    LEFT JOIN clients c ON a.client_id = c.id
+    LEFT JOIN vehicles v ON a.vehicle_id = v.id
+    LEFT JOIN services s ON a.service_id = s.id
+    LEFT JOIN users u ON a.assigned_to = u.id
+    WHERE a.appointment_date = ? AND a.status != 'cancelled'
+    ORDER BY a.appointment_time ASC
+  `, [today]);
+  
+  res.json(appointments);
+}));
+
+/**
+ * Get calendar view data
+ * GET /api/v1/appointments/calendar/:date
+ */
+router.get('/calendar/:date', asyncHandler(async (req, res) => {
+  const { date } = req.params;
+  const { view = 'month' } = req.query;
+  
+  let startDate, endDate;
+  const targetDate = new Date(date);
+  
+  if (view === 'week') {
+    startDate = new Date(targetDate);
+    startDate.setDate(targetDate.getDate() - targetDate.getDay());
+    endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+  } else {
+    startDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+    endDate = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
+  }
+  
+  const appointments = await dbConnection.all(`
+    SELECT 
+      a.*,
+      c.first_name || ' ' || c.last_name as client_name,
+      v.make || ' ' || v.model as vehicle_info,
+      s.name as service_name,
+      u.first_name || ' ' || u.last_name as assigned_mechanic
+    FROM appointments a
+    LEFT JOIN clients c ON a.client_id = c.id
+    LEFT JOIN vehicles v ON a.vehicle_id = v.id
+    LEFT JOIN services s ON a.service_id = s.id
+    LEFT JOIN users u ON a.assigned_to = u.id
+    WHERE a.appointment_date BETWEEN ? AND ? AND a.status != 'cancelled'
+    ORDER BY a.appointment_date ASC, a.appointment_time ASC
+  `, [startDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0]]);
+  
+  res.json({
+    startDate: startDate.toISOString().split('T')[0],
+    endDate: endDate.toISOString().split('T')[0],
+    view,
+    appointments
+  });
+}));
+
+/**
  * Get appointment by ID
  * GET /api/v1/appointments/:id
  */
@@ -447,81 +520,6 @@ router.delete('/:id', asyncHandler(async (req, res) => {
   });
   
   res.json({ message: 'Appointment cancelled successfully' });
-}));
-
-/**
- * Get today's appointments
- * GET /api/v1/appointments/today
- */
-router.get('/today', asyncHandler(async (req, res) => {
-  const today = new Date().toISOString().split('T')[0];
-  
-  const appointments = await dbConnection.all(`
-    SELECT 
-      a.*,
-      c.first_name || ' ' || c.last_name as client_name,
-      c.phone as client_phone,
-      v.make || ' ' || v.model || ' (' || v.year || ')' as vehicle_info,
-      v.license_plate,
-      s.name as service_name,
-      u.first_name || ' ' || u.last_name as assigned_mechanic
-    FROM appointments a
-    LEFT JOIN clients c ON a.client_id = c.id
-    LEFT JOIN vehicles v ON a.vehicle_id = v.id
-    LEFT JOIN services s ON a.service_id = s.id
-    LEFT JOIN users u ON a.assigned_to = u.id
-    WHERE a.appointment_date = ? AND a.status != 'cancelled'
-    ORDER BY a.appointment_time ASC
-  `, [today]);
-  
-  res.json(appointments);
-}));
-
-/**
- * Get calendar view data
- * GET /api/v1/appointments/calendar/:date
- */
-router.get('/calendar/:date', asyncHandler(async (req, res) => {
-  const { date } = req.params;
-  const { view = 'month' } = req.query;
-  
-  let startDate, endDate;
-  const targetDate = new Date(date);
-  
-  if (view === 'week') {
-    // Get week view (7 days)
-    startDate = new Date(targetDate);
-    startDate.setDate(targetDate.getDate() - targetDate.getDay()); // Start of week
-    endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 6); // End of week
-  } else {
-    // Get month view
-    startDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
-    endDate = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
-  }
-  
-  const appointments = await dbConnection.all(`
-    SELECT 
-      a.*,
-      c.first_name || ' ' || c.last_name as client_name,
-      v.make || ' ' || v.model as vehicle_info,
-      s.name as service_name,
-      u.first_name || ' ' || u.last_name as assigned_mechanic
-    FROM appointments a
-    LEFT JOIN clients c ON a.client_id = c.id
-    LEFT JOIN vehicles v ON a.vehicle_id = v.id
-    LEFT JOIN services s ON a.service_id = s.id
-    LEFT JOIN users u ON a.assigned_to = u.id
-    WHERE a.appointment_date BETWEEN ? AND ? AND a.status != 'cancelled'
-    ORDER BY a.appointment_date ASC, a.appointment_time ASC
-  `, [startDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0]]);
-  
-  res.json({
-    startDate: startDate.toISOString().split('T')[0],
-    endDate: endDate.toISOString().split('T')[0],
-    view,
-    appointments
-  });
 }));
 
 /**

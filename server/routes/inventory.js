@@ -147,6 +147,82 @@ router.get('/', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * Get low stock items
+ * GET /api/v1/inventory/low-stock
+ */
+router.get('/low-stock', asyncHandler(async (req, res) => {
+  const { limit = 50 } = req.query;
+  
+  const lowStockItems = await dbConnection.all(`
+    SELECT 
+      i.*,
+      c.name as category_name,
+      s.name as supplier_name,
+      (i.reorder_point - i.quantity_on_hand) as shortage_amount
+    FROM inventory_items i
+    LEFT JOIN inventory_categories c ON i.category_id = c.id
+    LEFT JOIN suppliers s ON i.supplier_id = s.id
+    WHERE i.is_active = 1 AND i.quantity_on_hand <= i.minimum_quantity
+    ORDER BY (i.quantity_on_hand / NULLIF(i.minimum_quantity, 0)) ASC
+    LIMIT ?
+  `, [parseInt(limit)]);
+  
+  res.json(lowStockItems);
+}));
+
+/**
+ * Get inventory categories
+ * GET /api/v1/inventory/categories
+ */
+router.get('/categories', asyncHandler(async (req, res) => {
+  const categories = await dbConnection.all(`
+    SELECT 
+      c.*,
+      COUNT(i.id) as item_count
+    FROM inventory_categories c
+    LEFT JOIN inventory_items i ON c.id = i.category_id AND i.is_active = 1
+    WHERE c.is_active = 1
+    GROUP BY c.id
+    ORDER BY c.name ASC
+  `);
+  
+  res.json(categories);
+}));
+
+/**
+ * Search inventory items
+ * GET /api/v1/inventory/search
+ */
+router.get('/search', asyncHandler(async (req, res) => {
+  const { q, limit = 10 } = req.query;
+  
+  if (!q || q.length < 2) {
+    return res.json([]);
+  }
+  
+  const searchTerm = `%${q}%`;
+  
+  const items = await dbConnection.all(`
+    SELECT 
+      i.id,
+      i.name,
+      i.part_number,
+      i.description,
+      i.quantity_on_hand,
+      i.selling_price,
+      c.name as category_name
+    FROM inventory_items i
+    LEFT JOIN inventory_categories c ON i.category_id = c.id
+    WHERE i.is_active = 1 
+      AND (i.name LIKE ? OR i.description LIKE ? OR i.part_number LIKE ? OR i.barcode LIKE ?)
+    ORDER BY i.name ASC
+    LIMIT ?
+  `, [searchTerm, searchTerm, searchTerm, searchTerm, parseInt(limit)]);
+  
+  res.json(items);
+}));
+
+/**
  * Get inventory item by ID
  * GET /api/v1/inventory/:id
  */
@@ -418,30 +494,6 @@ router.delete('/:id', asyncHandler(async (req, res) => {
 }));
 
 /**
- * Get low stock items
- * GET /api/v1/inventory/low-stock
- */
-router.get('/low-stock', asyncHandler(async (req, res) => {
-  const { limit = 50 } = req.query;
-  
-  const lowStockItems = await dbConnection.all(`
-    SELECT 
-      i.*,
-      c.name as category_name,
-      s.name as supplier_name,
-      (i.reorder_point - i.quantity_on_hand) as shortage_amount
-    FROM inventory_items i
-    LEFT JOIN inventory_categories c ON i.category_id = c.id
-    LEFT JOIN suppliers s ON i.supplier_id = s.id
-    WHERE i.is_active = 1 AND i.quantity_on_hand <= i.minimum_quantity
-    ORDER BY (i.quantity_on_hand / NULLIF(i.minimum_quantity, 0)) ASC
-    LIMIT ?
-  `, [parseInt(limit)]);
-  
-  res.json(lowStockItems);
-}));
-
-/**
  * Adjust stock quantity
  * POST /api/v1/inventory/:id/adjust
  */
@@ -539,58 +591,6 @@ router.post('/:id/adjust', asyncHandler(async (req, res) => {
     await dbConnection.run('ROLLBACK');
     throw error;
   }
-}));
-
-/**
- * Get inventory categories
- * GET /api/v1/inventory/categories
- */
-router.get('/categories', asyncHandler(async (req, res) => {
-  const categories = await dbConnection.all(`
-    SELECT 
-      c.*,
-      COUNT(i.id) as item_count
-    FROM inventory_categories c
-    LEFT JOIN inventory_items i ON c.id = i.category_id AND i.is_active = 1
-    WHERE c.is_active = 1
-    GROUP BY c.id
-    ORDER BY c.name ASC
-  `);
-  
-  res.json(categories);
-}));
-
-/**
- * Search inventory items
- * GET /api/v1/inventory/search
- */
-router.get('/search', asyncHandler(async (req, res) => {
-  const { q, limit = 10 } = req.query;
-  
-  if (!q || q.length < 2) {
-    return res.json([]);
-  }
-  
-  const searchTerm = `%${q}%`;
-  
-  const items = await dbConnection.all(`
-    SELECT 
-      i.id,
-      i.name,
-      i.part_number,
-      i.description,
-      i.quantity_on_hand,
-      i.selling_price,
-      c.name as category_name
-    FROM inventory_items i
-    LEFT JOIN inventory_categories c ON i.category_id = c.id
-    WHERE i.is_active = 1 
-      AND (i.name LIKE ? OR i.description LIKE ? OR i.part_number LIKE ? OR i.barcode LIKE ?)
-    ORDER BY i.name ASC
-    LIMIT ?
-  `, [searchTerm, searchTerm, searchTerm, searchTerm, parseInt(limit)]);
-  
-  res.json(items);
 }));
 
 module.exports = router;

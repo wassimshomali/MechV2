@@ -170,6 +170,39 @@ router.get('/', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * Search vehicles
+ * GET /api/v1/vehicles/search
+ */
+router.get('/search', asyncHandler(async (req, res) => {
+  const { q, limit = 10 } = req.query;
+  
+  if (!q || q.length < 2) {
+    return res.json([]);
+  }
+  
+  const searchTerm = `%${q}%`;
+  
+  const vehicles = await dbConnection.all(`
+    SELECT 
+      v.id,
+      v.make,
+      v.model,
+      v.year,
+      v.license_plate,
+      v.make || ' ' || v.model || ' (' || v.year || ')' as display_name,
+      c.first_name || ' ' || c.last_name as client_name
+    FROM vehicles v
+    LEFT JOIN clients c ON v.client_id = c.id
+    WHERE v.is_active = 1 
+      AND (v.make LIKE ? OR v.model LIKE ? OR v.license_plate LIKE ? OR v.vin LIKE ?)
+    ORDER BY v.year DESC, v.make, v.model
+    LIMIT ?
+  `, [searchTerm, searchTerm, searchTerm, searchTerm, parseInt(limit)]);
+  
+  res.json(vehicles);
+}));
+
+/**
  * Get vehicle by ID
  * GET /api/v1/vehicles/:id
  */
@@ -483,39 +516,6 @@ router.get('/:id/appointments', asyncHandler(async (req, res) => {
   `, [...params, parseInt(limit)]);
   
   res.json(appointments);
-}));
-
-/**
- * Search vehicles
- * GET /api/v1/vehicles/search
- */
-router.get('/search', asyncHandler(async (req, res) => {
-  const { q, limit = 10 } = req.query;
-  
-  if (!q || q.length < 2) {
-    return res.json([]);
-  }
-  
-  const searchTerm = `%${q}%`;
-  
-  const vehicles = await dbConnection.all(`
-    SELECT 
-      v.id,
-      v.make,
-      v.model,
-      v.year,
-      v.license_plate,
-      v.make || ' ' || v.model || ' (' || v.year || ')' as display_name,
-      c.first_name || ' ' || c.last_name as client_name
-    FROM vehicles v
-    LEFT JOIN clients c ON v.client_id = c.id
-    WHERE v.is_active = 1 
-      AND (v.make LIKE ? OR v.model LIKE ? OR v.license_plate LIKE ? OR v.vin LIKE ?)
-    ORDER BY v.year DESC, v.make, v.model
-    LIMIT ?
-  `, [searchTerm, searchTerm, searchTerm, searchTerm, parseInt(limit)]);
-  
-  res.json(vehicles);
 }));
 
 module.exports = router;
