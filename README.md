@@ -1,5 +1,11 @@
 # MoMech - Mechanic ERP/CRM System
 
+**Montreal-first garage management software** — clients, vehicles, appointments, inventory, work orders, and Quebec-ready invoicing.
+
+> **Product vision & development guide:** see [docs/NORTH_STAR.md](docs/NORTH_STAR.md)  
+> **Agent / contributor playbook:** see [docs/AGENT_PLAYBOOK.md](docs/AGENT_PLAYBOOK.md)  
+> **Roadmap:** see [docs/ROADMAP.md](docs/ROADMAP.md)
+
 A digital transformation tool for small garage mechanics to manage clients, vehicles, appointments, inventory, work orders, and invoicing.
 
 ## Features
@@ -108,6 +114,18 @@ NODE_ENV=production JWT_SECRET=your-secret SESSION_SECRET=your-secret npm start
 ```
 
 The server serves the SPA from `index.html` and static assets from `src/` and `dist/`.
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [docs/NORTH_STAR.md](docs/NORTH_STAR.md) | Product vision, locked decisions, success metrics |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Phased development plan with checkboxes |
+| [docs/MONTREAL_REQUIREMENTS.md](docs/MONTREAL_REQUIREMENTS.md) | Quebec i18n, tax, locale, legal specs |
+| [docs/AGENT_PLAYBOOK.md](docs/AGENT_PLAYBOOK.md) | Autonomous agent development instructions |
+| [docs/FOUNDER_TASKS.md](docs/FOUNDER_TASKS.md) | Human-only tasks (Twilio, pilots, legal) |
+| [docs/BUSINESS_AND_GTM.md](docs/BUSINESS_AND_GTM.md) | Pricing, sales process, GTM |
+| [docs/api.md](docs/api.md) | API endpoint reference |
 
 ## License
 
