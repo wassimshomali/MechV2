@@ -5,6 +5,7 @@
 
 import apiService from '../../services/api.js';
 import { t, tStatus } from '../../i18n/index.js';
+import { formatCurrency, formatDate, formatTime } from '../../utils/formatters.js';
 
 export class Dashboard {
     constructor() {
@@ -217,7 +218,7 @@ export class Dashboard {
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-500">${t('dashboard.monthlyRevenue')}</p>
-                        <p class="text-3xl font-semibold text-gray-900">$${(this.stats.monthlyRevenue || 0).toLocaleString()}</p>
+                        <p class="text-3xl font-semibold text-gray-900">${formatCurrency(this.stats.monthlyRevenue || 0)}</p>
                     </div>
                     <div class="p-3 rounded-full bg-green-100 text-green-600">
                         <i data-feather="dollar-sign"></i>
@@ -321,7 +322,7 @@ export class Dashboard {
                 <div class="ml-4 flex-1">
                     <div class="flex items-center justify-between">
                         <h3 class="text-sm font-medium text-gray-900">${activity.client_name}</h3>
-                        <span class="text-xs text-gray-500">${this.formatDate(activity.created_at)}</span>
+                        <span class="text-xs text-gray-500">${formatDate(activity.created_at)}</span>
                     </div>
                     <p class="text-sm text-gray-500">${activity.vehicle} - ${activity.service_name}</p>
                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${this.getStatusClass(activity.status)}">
@@ -439,8 +440,8 @@ export class Dashboard {
                                 <p class="text-xs text-gray-400">${appointment.service_name || t('common.generalService')}</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-sm font-medium text-gray-900">${this.formatTime(appointment.appointment_time)}</p>
-                                <p class="text-xs text-gray-500">${this.formatDate(appointment.appointment_date)}</p>
+                                <p class="text-sm font-medium text-gray-900">${formatTime(appointment.appointment_time)}</p>
+                                <p class="text-xs text-gray-500">${formatDate(appointment.appointment_date)}</p>
                             </div>
                         </div>
                     </div>
@@ -588,20 +589,6 @@ export class Dashboard {
             good: 'text-green-500'
         };
         return colors[level];
-    }
-    
-    formatDate(dateString) {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleDateString();
-    }
-    
-    formatTime(timeString) {
-        if (!timeString) return '';
-        const [hours, minutes] = timeString.split(':');
-        const date = new Date();
-        date.setHours(parseInt(hours), parseInt(minutes));
-        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
     }
     
     destroy() {

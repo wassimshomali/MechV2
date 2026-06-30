@@ -460,6 +460,7 @@
     "year": "Veuillez entrer une année valide",
     "url": "Veuillez entrer une URL valide",
     "licensePlate": "Veuillez entrer une plaque d'immatriculation valide",
+    "postalCode": "Veuillez entrer un code postal valide (ex. H2X 1Y4)",
     "failed": "Échec de la validation"
   },
   "time": {
@@ -474,7 +475,6 @@
   "units": {
     "min": "min",
     "hr": "h",
-    "mi": "mi",
     "km": "km",
     "bytes": "octets"
   }

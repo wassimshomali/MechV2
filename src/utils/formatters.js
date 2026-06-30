@@ -1,87 +1,88 @@
 /**
  * Formatting Utilities for MoMech
- * Functions for formatting dates, currency, phone numbers, etc.
+ * Canadian locale defaults (CAD, km, DD/MM/YYYY)
  */
 
 import { t, tStatus, tPriority, getLocale } from '../i18n/index.js';
+import { LOCALE_CONFIG } from '../config/locale.js';
 
 /**
- * Format currency values
- * @param {number} amount - Amount to format
- * @param {string} currency - Currency code (default: USD)
- * @returns {string} - Formatted currency string
+ * Format currency values in CAD using active locale
+ * fr-CA → "1 234,56 $" | en-CA → "$1,234.56"
  */
-export function formatCurrency(amount, currency = 'USD') {
+export function formatCurrency(amount, currency = LOCALE_CONFIG.DEFAULT_CURRENCY) {
     if (amount === null || amount === undefined || isNaN(amount)) {
-        return '$0.00';
+        return new Intl.NumberFormat(getLocale(), {
+            style: 'currency',
+            currency,
+        }).format(0);
     }
-    
-    return new Intl.NumberFormat('en-US', {
+
+    return new Intl.NumberFormat(getLocale(), {
         style: 'currency',
-        currency: currency
+        currency,
     }).format(amount);
 }
 
 /**
- * Format date values
- * @param {string|Date} date - Date to format
- * @param {string} format - Format type ('short', 'long', 'relative')
- * @returns {string} - Formatted date string
+ * Format date for display as DD/MM/YYYY (storage remains ISO)
  */
 export function formatDate(date, format = 'short') {
     if (!date) return '';
-    
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    
+
+    const dateObj = typeof date === 'string' ? new Date(date.includes('T') ? date : `${date}T12:00:00`) : date;
+
     if (isNaN(dateObj.getTime())) {
         return '';
     }
-    
+
     const locale = getLocale();
-    
+
     switch (format) {
         case 'long':
             return dateObj.toLocaleDateString(locale, {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                day: 'numeric',
             });
-            
+
         case 'relative':
             return formatRelativeDate(dateObj);
-            
+
         case 'short':
         default:
-            return dateObj.toLocaleDateString(locale);
+            return formatDateShort(dateObj);
     }
 }
 
 /**
- * Format time values
- * @param {string} time - Time string (HH:MM format)
- * @param {boolean} use24Hour - Whether to use 24-hour format
- * @returns {string} - Formatted time string
+ * DD/MM/YYYY display format (Quebec standard)
  */
-export function formatTime(time, use24Hour = false) {
-    if (!time) return '';
-    
-    const [hours, minutes] = time.split(':');
-    const date = new Date();
-    date.setHours(parseInt(hours), parseInt(minutes));
-    
-    return date.toLocaleTimeString(getLocale(), {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: !use24Hour
-    });
+export function formatDateShort(dateObj) {
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = dateObj.getFullYear();
+    return `${day}/${month}/${year}`;
 }
 
 /**
- * Format relative date (e.g., "2 days ago", "in 3 hours")
- * @param {Date} date - Date to format
- * @returns {string} - Relative date string
+ * Format time values
  */
+export function formatTime(time, use24Hour = true) {
+    if (!time) return '';
+
+    const [hours, minutes] = time.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+
+    return date.toLocaleTimeString(getLocale(), {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: !use24Hour,
+    });
+}
+
 export function formatRelativeDate(date) {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -89,7 +90,7 @@ export function formatRelativeDate(date) {
     const diffMinutes = Math.floor(diffSeconds / 60);
     const diffHours = Math.floor(diffMinutes / 60);
     const diffDays = Math.floor(diffHours / 24);
-    
+
     if (diffSeconds < 60) {
         return t('time.justNow');
     } else if (diffMinutes < 60) {
@@ -107,210 +108,152 @@ export function formatRelativeDate(date) {
 }
 
 /**
- * Format phone numbers
- * @param {string} phone - Phone number to format
- * @returns {string} - Formatted phone number
+ * Format Canadian phone numbers as (514) 555-1234
  */
 export function formatPhone(phone) {
     if (!phone) return '';
-    
-    // Remove all non-numeric characters
+
     const cleaned = phone.replace(/\D/g, '');
-    
-    // Format based on length
+
     if (cleaned.length === 10) {
         return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-    } else if (cleaned.length === 11 && cleaned[0] === '1') {
-        return `+1 (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`;
-    } else {
-        return phone; // Return original if can't format
     }
+    if (cleaned.length === 11 && cleaned[0] === '1') {
+        return `+1 (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`;
+    }
+
+    return phone;
 }
 
 /**
- * Format vehicle display string
- * @param {object} vehicle - Vehicle object
- * @returns {string} - Formatted vehicle string
+ * Format Canadian postal code as A1A 1A1
  */
+export function formatPostalCode(postalCode) {
+    if (!postalCode) return '';
+
+    const cleaned = postalCode.replace(/\s/g, '').toUpperCase();
+    if (cleaned.length === 6) {
+        return `${cleaned.slice(0, 3)} ${cleaned.slice(3)}`;
+    }
+
+    return postalCode.toUpperCase();
+}
+
 export function formatVehicle(vehicle) {
     if (!vehicle) return '';
-    
+
     const parts = [];
     if (vehicle.year) parts.push(vehicle.year);
     if (vehicle.make) parts.push(vehicle.make);
     if (vehicle.model) parts.push(vehicle.model);
-    
+
     return parts.join(' ');
 }
 
-/**
- * Format client name
- * @param {object} client - Client object
- * @returns {string} - Formatted client name
- */
 export function formatClientName(client) {
     if (!client) return '';
-    
+
     const parts = [];
     if (client.firstName || client.first_name) parts.push(client.firstName || client.first_name);
     if (client.lastName || client.last_name) parts.push(client.lastName || client.last_name);
-    
+
     return parts.join(' ');
 }
 
-/**
- * Format address
- * @param {object} address - Address object or client object
- * @returns {string} - Formatted address string
- */
 export function formatAddress(address) {
     if (!address) return '';
-    
+
     const parts = [];
     if (address.address) parts.push(address.address);
     if (address.city) parts.push(address.city);
     if (address.state) parts.push(address.state);
-    if (address.zipCode || address.zip_code) parts.push(address.zipCode || address.zip_code);
-    
+    const postal = address.zipCode || address.zip_code;
+    if (postal) parts.push(formatPostalCode(postal));
+
     return parts.join(', ');
 }
 
-/**
- * Format file size
- * @param {number} bytes - File size in bytes
- * @returns {string} - Formatted file size
- */
 export function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    
+    if (bytes === 0) return `0 ${t('units.bytes')}`;
+
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = [t('units.bytes'), 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
-/**
- * Format percentage
- * @param {number} value - Value to format as percentage
- * @param {number} decimals - Number of decimal places
- * @returns {string} - Formatted percentage
- */
 export function formatPercentage(value, decimals = 1) {
     if (value === null || value === undefined || isNaN(value)) {
         return '0%';
     }
-    
+
     return `${value.toFixed(decimals)}%`;
 }
 
-/**
- * Format duration in minutes to human readable format
- * @param {number} minutes - Duration in minutes
- * @returns {string} - Formatted duration
- */
 export function formatDuration(minutes) {
-    if (!minutes || minutes <= 0) return '0 min';
-    
+    if (!minutes || minutes <= 0) return `0 ${t('units.min')}`;
+
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    
+
     if (hours === 0) {
-        return `${mins} min`;
-    } else if (mins === 0) {
-        return `${hours} hr`;
-    } else {
-        return `${hours} hr ${mins} min`;
+        return `${mins} ${t('units.min')}`;
     }
+    if (mins === 0) {
+        return `${hours} ${t('units.hr')}`;
+    }
+    return `${hours} ${t('units.hr')} ${mins} ${t('units.min')}`;
 }
 
 /**
- * Format mileage
- * @param {number} mileage - Mileage value
- * @returns {string} - Formatted mileage
+ * Format odometer reading in kilometres
  */
-export function formatMileage(mileage) {
-    if (!mileage || mileage <= 0) return '0 mi';
-    
-    return `${mileage.toLocaleString()} mi`;
+export function formatMileage(kilometres) {
+    if (!kilometres || kilometres <= 0) {
+        return `0 ${t('units.km')}`;
+    }
+
+    return `${kilometres.toLocaleString(getLocale())} ${t('units.km')}`;
 }
 
-/**
- * Format VIN for display (show first 8 and last 4 characters)
- * @param {string} vin - VIN number
- * @returns {string} - Formatted VIN
- */
 export function formatVIN(vin) {
     if (!vin) return '';
     if (vin.length !== 17) return vin;
-    
+
     return `${vin.slice(0, 8)}...${vin.slice(-4)}`;
 }
 
-/**
- * Format work order number
- * @param {string} workOrderNumber - Work order number
- * @returns {string} - Formatted work order number
- */
 export function formatWorkOrderNumber(workOrderNumber) {
     if (!workOrderNumber) return '';
     return workOrderNumber.toUpperCase();
 }
 
-/**
- * Format invoice number
- * @param {string} invoiceNumber - Invoice number
- * @returns {string} - Formatted invoice number
- */
 export function formatInvoiceNumber(invoiceNumber) {
     if (!invoiceNumber) return '';
     return invoiceNumber.toUpperCase();
 }
 
-/**
- * Format status for display
- * @param {string} status - Status value
- * @returns {string} - Formatted status
- */
 export function formatStatus(status) {
     return tStatus(status);
 }
 
-/**
- * Format priority for display
- * @param {string} priority - Priority value
- * @returns {string} - Formatted priority
- */
 export function formatPriority(priority) {
     return tPriority(priority);
 }
 
-/**
- * Truncate text to specified length
- * @param {string} text - Text to truncate
- * @param {number} maxLength - Maximum length
- * @param {string} suffix - Suffix to add when truncated
- * @returns {string} - Truncated text
- */
 export function truncateText(text, maxLength = 50, suffix = '...') {
     if (!text) return '';
     if (text.length <= maxLength) return text;
-    
+
     return text.slice(0, maxLength - suffix.length) + suffix;
 }
 
-/**
- * Format table cell data based on type
- * @param {any} value - Value to format
- * @param {string} type - Data type
- * @param {object} options - Formatting options
- * @returns {string} - Formatted value
- */
 export function formatTableCell(value, type, options = {}) {
     if (value === null || value === undefined) {
         return options.emptyText || '-';
     }
-    
+
     switch (type) {
         case 'currency':
             return formatCurrency(value);

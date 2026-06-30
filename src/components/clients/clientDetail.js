@@ -3,7 +3,7 @@
  */
 
 import clientService from '../../services/clientService.js';
-import { formatDate, formatPhone, formatAddress } from '../../utils/formatters.js';
+import { formatDate, formatPhone, formatAddress, formatCurrency, formatMileage } from '../../utils/formatters.js';
 import { renderPageHeader, renderDetailCard, renderDetailGrid, renderPrimaryButton } from '../../utils/pageHelpers.js';
 import { t } from '../../i18n/index.js';
 
@@ -51,7 +51,7 @@ export class ClientDetail {
                             { label: t('clients.vehicles'), value: vehicles.length },
                             { label: t('clients.recentAppointments'), value: appointments.length },
                             { label: t('clients.totalServices'), value: this.client.serviceHistory?.totalServices ?? '-' },
-                            { label: t('clients.totalSpent'), value: this.client.serviceHistory?.totalSpent ? `$${this.client.serviceHistory.totalSpent}` : '-' },
+                            { label: t('clients.totalSpent'), value: this.client.serviceHistory?.totalSpent ? formatCurrency(this.client.serviceHistory.totalSpent) : '-' },
                         ]))}
                         ${renderDetailCard(t('clients.recentAppointments'), this.renderAppointments(appointments))}
                     </div>
@@ -70,7 +70,7 @@ export class ClientDetail {
             <li class="py-3 flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-900">${v.year} ${v.make} ${v.model}</p>
-                    <p class="text-sm text-gray-500">${v.licensePlate || t('common.noPlate')} · ${v.mileage?.toLocaleString() || 0} mi</p>
+                    <p class="text-sm text-gray-500">${v.licensePlate || t('common.noPlate')} · ${formatMileage(v.mileage || 0)}</p>
                 </div>
                 <button onclick="window.location.hash = '/vehicles/${v.id}'" class="text-blue-600 text-sm hover:text-blue-800">${t('common.view')}</button>
             </li>

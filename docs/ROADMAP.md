@@ -42,14 +42,14 @@ Core app scaffold merged to feature branch.
 
 ### A2. Canadian locale — P0
 
-- [ ] Change default currency to CAD in `config/app.js`
-- [ ] Update `formatCurrency()` for `fr-CA` locale (`1 234,56 $`)
-- [ ] Change distance display from miles to kilometres
-- [ ] Date format: `DD/MM/YYYY` for display, ISO for storage
-- [ ] Phone validation: Canadian `(514) 555-1234` format
-- [ ] Postal code validation: `A1A 1A1`
-- [ ] Timezone default: `America/Montreal`
-- [ ] Update seed data with Montreal addresses, Quebec plates, km
+- [x] Change default currency to CAD in `config/app.js`
+- [x] Update `formatCurrency()` for `fr-CA` locale (`1 234,56 $`)
+- [x] Change distance display from miles to kilometres
+- [x] Date format: `DD/MM/YYYY` for display, ISO for storage
+- [x] Phone validation: Canadian `(514) 555-1234` format
+- [x] Postal code validation: `A1A 1A1`
+- [x] Timezone default: `America/Montreal`
+- [x] Update seed data with Montreal addresses, Quebec plates, km
 
 **Acceptance:** Dashboard and client detail show km, CAD, Montreal-style dates.
 

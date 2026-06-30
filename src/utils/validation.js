@@ -20,6 +20,7 @@ const VALIDATION_MESSAGE_KEYS = {
     year: 'validation.year',
     url: 'validation.url',
     licensePlate: 'validation.licensePlate',
+    postalCode: 'validation.postalCode',
 };
 
 export class Validator {
@@ -116,11 +117,12 @@ validator.addRule('email', (value) => {
     return emailRegex.test(value);
 }, 'Please enter a valid email address');
 
-// Phone validation
+// Canadian phone validation (514) 555-1234
 validator.addRule('phone', (value) => {
-    if (!value) return true; // Allow empty if not required
-    const phoneRegex = /^[\d\s\-\(\)\+\.]+$/;
-    return phoneRegex.test(value) && value.replace(/\D/g, '').length >= 10;
+    if (!value) return true;
+    const phoneRegex = /^(\+1)?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
+    const digits = value.replace(/\D/g, '');
+    return phoneRegex.test(value) && (digits.length === 10 || (digits.length === 11 && digits[0] === '1'));
 }, 'Please enter a valid phone number');
 
 // Minimum length validation
@@ -194,10 +196,15 @@ validator.addRule('url', (value) => {
     }
 }, 'Please enter a valid URL');
 
-// Custom validation for specific business rules
+// Canadian postal code (A1A 1A1)
+validator.addRule('postalCode', (value) => {
+    if (!value) return true;
+    return /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(value.trim());
+}, 'Please enter a valid postal code');
+
+// Quebec / Canadian license plate
 validator.addRule('licensePlate', (value) => {
-    if (!value) return true; // Allow empty if not required
-    // Basic license plate validation (can be customized per state)
+    if (!value) return true;
     return value.length >= 2 && value.length <= 8 && /^[A-Z0-9\-\s]+$/i.test(value);
 }, 'Please enter a valid license plate');
 
@@ -209,7 +216,7 @@ export const clientSchema = {
     lastName: ['required', { name: 'maxLength', params: [50] }],
     email: ['email', { name: 'maxLength', params: [100] }],
     phone: ['phone'],
-    zipCode: [{ name: 'maxLength', params: [10] }]
+    zipCode: ['postalCode', { name: 'maxLength', params: [8] }]
 };
 
 export const vehicleSchema = {

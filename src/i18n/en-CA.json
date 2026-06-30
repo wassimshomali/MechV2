@@ -460,6 +460,7 @@
     "year": "Please enter a valid year",
     "url": "Please enter a valid URL",
     "licensePlate": "Please enter a valid license plate",
+    "postalCode": "Please enter a valid postal code (e.g. H2X 1Y4)",
     "failed": "Validation failed"
   },
   "time": {
@@ -474,7 +475,6 @@
   "units": {
     "min": "min",
     "hr": "hr",
-    "mi": "mi",
     "km": "km",
     "bytes": "Bytes"
   }
