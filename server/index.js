@@ -21,10 +21,12 @@ const vehicleRoutes = require('./routes/vehicles');
 const appointmentRoutes = require('./routes/appointments');
 const inventoryRoutes = require('./routes/inventory');
 const financialRoutes = require('./routes/financial');
+const servicesRoutes = require('./routes/services');
+const workOrderRoutes = require('./routes/work-orders');
 const dashboardRoutes = require('./routes/dashboard');
 
 // Import middleware
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
 
 class Server {
@@ -43,8 +45,8 @@ class Server {
         contentSecurityPolicy: {
           directives: {
             defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://cdn.jsdelivr.net"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://cdn.jsdelivr.net"],
             imgSrc: ["'self'", "data:", "https:", "http:"],
             fontSrc: ["'self'", "https:", "data:"],
             connectSrc: ["'self'", "http://localhost:3001"],
@@ -88,12 +90,12 @@ class Server {
       limit: config.PERFORMANCE.MAX_REQUEST_SIZE 
     }));
 
-    // Static file serving
-    this.app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
-    this.app.use('/assets', express.static(path.join(__dirname, '../public')));
-    
-    // Serve the main application
-    this.app.use(express.static(path.join(__dirname, '../')));
+    // Static file serving (scoped directories only)
+    const rootDir = path.join(__dirname, '../');
+    this.app.use('/src', express.static(path.join(rootDir, 'src')));
+    this.app.use('/dist', express.static(path.join(rootDir, 'dist')));
+    this.app.use('/uploads', express.static(path.join(rootDir, 'public/uploads')));
+    this.app.use('/assets', express.static(path.join(rootDir, 'public')));
 
     // Request logging
     this.app.use((req, res, next) => {
@@ -126,15 +128,17 @@ class Server {
     // API routes
     const apiRouter = express.Router();
     
-    // Authentication routes
+    // Authentication routes (kept for potential future use)
     apiRouter.use('/auth', authRoutes);
     
-    // Resource routes
+    // Resource routes (no authentication required - single user app)
     apiRouter.use('/clients', clientRoutes);
     apiRouter.use('/vehicles', vehicleRoutes);
     apiRouter.use('/appointments', appointmentRoutes);
     apiRouter.use('/inventory', inventoryRoutes);
     apiRouter.use('/financial', financialRoutes);
+    apiRouter.use('/services', servicesRoutes);
+    apiRouter.use('/work-orders', workOrderRoutes);
     apiRouter.use('/dashboard', dashboardRoutes);
 
     // Mount API routes

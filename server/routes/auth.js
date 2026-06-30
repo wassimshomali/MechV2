@@ -219,10 +219,16 @@ router.get('/profile', asyncHandler(async (req, res) => {
 }));
 
 /**
- * Register new user (admin only for now)
+ * Register new user (disabled by default — single-user app)
  * POST /api/v1/auth/register
  */
 router.post('/register', asyncHandler(async (req, res) => {
+  if (process.env.ENABLE_REGISTRATION !== 'true') {
+    return res.status(403).json({
+      error: 'Registration is disabled',
+      message: 'This is a single-user application. Set ENABLE_REGISTRATION=true to allow registration.'
+    });
+  }
   const { 
     username, 
     email, 

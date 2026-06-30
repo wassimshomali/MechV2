@@ -112,9 +112,9 @@ const APP_CONFIG = {
     
     // Financial settings
     FINANCIAL: {
-      DEFAULT_CURRENCY: 'USD',
+      DEFAULT_CURRENCY: 'CAD',
       CURRENCY_SYMBOL: '$',
-      TAX_RATE: 0.08, // 8% default tax rate
+      TAX_RATE: 0.08, // Deprecated — replaced by GST/QST in Phase A3
       PAYMENT_TERMS: 30, // days
       LATE_FEE_RATE: 0.015, // 1.5% per month
       INVOICE_NUMBER_PREFIX: 'INV-',
@@ -168,10 +168,10 @@ const APP_CONFIG = {
     THEME: 'light', // light, dark, auto
     SIDEBAR_COLLAPSED: false,
     ITEMS_PER_PAGE: 20,
-    DATE_FORMAT: 'MM/DD/YYYY',
-    TIME_FORMAT: '12', // 12 or 24 hour
-    TIMEZONE: process.env.TZ || 'America/New_York',
-    LANGUAGE: 'en',
+    DATE_FORMAT: 'DD/MM/YYYY',
+    TIME_FORMAT: '24', // 24-hour common in Quebec garages
+    TIMEZONE: process.env.TZ || 'America/Montreal',
+    LANGUAGE: 'fr-CA',
     ENABLE_ANIMATIONS: true,
     SHOW_TOOLTIPS: true
   },
@@ -272,13 +272,5 @@ const config = {
   validate: validateConfig
 };
 
-// Export for different environments
-if (typeof module !== 'undefined' && module.exports) {
-  // Node.js environment
-  module.exports = config;
-} else {
-  // Browser environment
-  window.MoMechConfig = config;
-}
-
-export default config;
+// Export configuration
+module.exports = config;

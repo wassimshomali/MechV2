@@ -82,9 +82,10 @@ dist
 
 # Gatsby files
 .cache/
-public
 
-# Vuepress build output
+# Uploads (keep directory structure)
+public/uploads/*
+!public/uploads/.gitkeep
 .vuepress/dist
 
 # Serverless directories
@@ -107,6 +108,8 @@ public
 *.sqlite
 *.sqlite3
 database/*.db
+database/*.db-shm
+database/*.db-wal
 database/backups/
 
 # Log files
@@ -118,7 +121,6 @@ backups/
 *.backup
 
 # Uploads and user files
-public/uploads/
 uploads/
 
 # Build outputs

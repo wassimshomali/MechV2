@@ -1,0 +1,263 @@
+/**
+ * Validation Utilities for MoMech
+ * Client-side form validation functions
+ */
+
+import { t } from '../i18n/index.js';
+
+const VALIDATION_MESSAGE_KEYS = {
+    required: 'validation.required',
+    email: 'validation.email',
+    phone: 'validation.phone',
+    minLength: 'validation.tooShort',
+    maxLength: 'validation.tooLong',
+    numeric: 'validation.numeric',
+    positive: 'validation.positive',
+    integer: 'validation.integer',
+    date: 'validation.date',
+    futureDate: 'validation.futureDate',
+    vin: 'validation.vin',
+    year: 'validation.year',
+    url: 'validation.url',
+    licensePlate: 'validation.licensePlate',
+    postalCode: 'validation.postalCode',
+};
+
+export class Validator {
+    constructor() {
+        this.rules = new Map();
+        this.messages = new Map();
+    }
+    
+    /**
+     * Add a validation rule
+     * @param {string} name - Rule name
+     * @param {function} validator - Validation function
+     * @param {string} message - Default error message
+     */
+    addRule(name, validator, message) {
+        this.rules.set(name, validator);
+        this.messages.set(name, message);
+    }
+    
+    /**
+     * Validate a single value against rules
+     * @param {any} value - Value to validate
+     * @param {array} rules - Array of rule names or rule objects
+     * @returns {array} - Array of error messages
+     */
+    validate(value, rules) {
+        const errors = [];
+        
+        for (const rule of rules) {
+            let ruleName, ruleParams, customMessage;
+            
+            if (typeof rule === 'string') {
+                ruleName = rule;
+                ruleParams = [];
+                customMessage = null;
+            } else {
+                ruleName = rule.name;
+                ruleParams = rule.params || [];
+                customMessage = rule.message;
+            }
+            
+            const validator = this.rules.get(ruleName);
+            if (validator) {
+                const isValid = validator(value, ...ruleParams);
+                if (!isValid) {
+                    const key = VALIDATION_MESSAGE_KEYS[ruleName] || 'validation.failed';
+                    const message = customMessage || t(key);
+                    errors.push(message);
+                }
+            }
+        }
+        
+        return errors;
+    }
+    
+    /**
+     * Validate an object against a schema
+     * @param {object} data - Data to validate
+     * @param {object} schema - Validation schema
+     * @returns {object} - Validation result with errors
+     */
+    validateObject(data, schema) {
+        const errors = {};
+        let isValid = true;
+        
+        for (const [field, rules] of Object.entries(schema)) {
+            const value = data[field];
+            const fieldErrors = this.validate(value, rules);
+            
+            if (fieldErrors.length > 0) {
+                errors[field] = fieldErrors;
+                isValid = false;
+            }
+        }
+        
+        return { isValid, errors };
+    }
+}
+
+// Create default validator instance with common rules
+const validator = new Validator();
+
+// Required validation
+validator.addRule('required', (value) => {
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'string') return value.trim().length > 0;
+    return value !== null && value !== undefined && value !== '';
+}, 'This field is required');
+
+// Email validation
+validator.addRule('email', (value) => {
+    if (!value) return true; // Allow empty if not required
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(value);
+}, 'Please enter a valid email address');
+
+// Canadian phone validation (514) 555-1234
+validator.addRule('phone', (value) => {
+    if (!value) return true;
+    const phoneRegex = /^(\+1)?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
+    const digits = value.replace(/\D/g, '');
+    return phoneRegex.test(value) && (digits.length === 10 || (digits.length === 11 && digits[0] === '1'));
+}, 'Please enter a valid phone number');
+
+// Minimum length validation
+validator.addRule('minLength', (value, minLength) => {
+    if (!value) return true; // Allow empty if not required
+    return value.toString().length >= minLength;
+}, 'Value is too short');
+
+// Maximum length validation
+validator.addRule('maxLength', (value, maxLength) => {
+    if (!value) return true; // Allow empty if not required
+    return value.toString().length <= maxLength;
+}, 'Value is too long');
+
+// Numeric validation
+validator.addRule('numeric', (value) => {
+    if (!value) return true; // Allow empty if not required
+    return !isNaN(value) && !isNaN(parseFloat(value));
+}, 'Please enter a valid number');
+
+// Positive number validation
+validator.addRule('positive', (value) => {
+    if (!value) return true; // Allow empty if not required
+    return parseFloat(value) > 0;
+}, 'Value must be positive');
+
+// Integer validation
+validator.addRule('integer', (value) => {
+    if (!value) return true; // Allow empty if not required
+    return Number.isInteger(parseFloat(value));
+}, 'Please enter a whole number');
+
+// Date validation
+validator.addRule('date', (value) => {
+    if (!value) return true; // Allow empty if not required
+    const date = new Date(value);
+    return date instanceof Date && !isNaN(date);
+}, 'Please enter a valid date');
+
+// Future date validation
+validator.addRule('futureDate', (value) => {
+    if (!value) return true; // Allow empty if not required
+    const date = new Date(value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date >= today;
+}, 'Date must be today or in the future');
+
+// VIN validation
+validator.addRule('vin', (value) => {
+    if (!value) return true; // Allow empty if not required
+    return value.length === 17 && /^[A-HJ-NPR-Z0-9]+$/i.test(value);
+}, 'VIN must be exactly 17 characters');
+
+// Year validation
+validator.addRule('year', (value) => {
+    if (!value) return true; // Allow empty if not required
+    const year = parseInt(value);
+    const currentYear = new Date().getFullYear();
+    return year >= 1900 && year <= currentYear + 1;
+}, 'Please enter a valid year');
+
+// URL validation
+validator.addRule('url', (value) => {
+    if (!value) return true; // Allow empty if not required
+    try {
+        new URL(value);
+        return true;
+    } catch {
+        return false;
+    }
+}, 'Please enter a valid URL');
+
+// Canadian postal code (A1A 1A1)
+validator.addRule('postalCode', (value) => {
+    if (!value) return true;
+    return /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(value.trim());
+}, 'Please enter a valid postal code');
+
+// Quebec / Canadian license plate
+validator.addRule('licensePlate', (value) => {
+    if (!value) return true;
+    return value.length >= 2 && value.length <= 8 && /^[A-Z0-9\-\s]+$/i.test(value);
+}, 'Please enter a valid license plate');
+
+export default validator;
+
+// Export validation schemas for common forms
+export const clientSchema = {
+    firstName: ['required', { name: 'maxLength', params: [50] }],
+    lastName: ['required', { name: 'maxLength', params: [50] }],
+    email: ['email', { name: 'maxLength', params: [100] }],
+    phone: ['phone'],
+    zipCode: ['postalCode', { name: 'maxLength', params: [8] }]
+};
+
+export const vehicleSchema = {
+    clientId: ['required'],
+    make: ['required', { name: 'maxLength', params: [50] }],
+    model: ['required', { name: 'maxLength', params: [50] }],
+    year: ['required', 'year'],
+    vin: ['vin'],
+    licensePlate: ['licensePlate'],
+    mileage: ['numeric', 'positive']
+};
+
+export const appointmentSchema = {
+    clientId: ['required'],
+    vehicleId: ['required'],
+    appointmentDate: ['required', 'date', 'futureDate'],
+    appointmentTime: ['required'],
+    estimatedDuration: ['numeric', 'positive']
+};
+
+export const inventorySchema = {
+    name: ['required', { name: 'maxLength', params: [100] }],
+    costPrice: ['numeric', 'positive'],
+    sellingPrice: ['numeric', 'positive'],
+    quantityOnHand: ['numeric'],
+    minimumQuantity: ['numeric'],
+    reorderPoint: ['numeric'],
+    reorderQuantity: ['numeric']
+};
+
+export const invoiceSchema = {
+    clientId: ['required'],
+    invoiceDate: ['required', 'date'],
+    dueDate: ['required', 'date'],
+    subtotal: ['numeric', 'positive'],
+    totalAmount: ['numeric', 'positive']
+};
+
+export const paymentSchema = {
+    clientId: ['required'],
+    amount: ['required', 'numeric', 'positive'],
+    paymentMethod: ['required'],
+    paymentDate: ['required', 'date']
+};

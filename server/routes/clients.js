@@ -129,6 +129,37 @@ router.get('/', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * Search clients
+ * GET /api/v1/clients/search
+ */
+router.get('/search', asyncHandler(async (req, res) => {
+  const { q, limit = 10 } = req.query;
+  
+  if (!q || q.length < 2) {
+    return res.json([]);
+  }
+  
+  const searchTerm = `%${q}%`;
+  
+  const clients = await dbConnection.all(`
+    SELECT 
+      id,
+      first_name,
+      last_name,
+      email,
+      phone,
+      first_name || ' ' || last_name as full_name
+    FROM clients 
+    WHERE is_active = 1 
+      AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR phone LIKE ?)
+    ORDER BY last_name, first_name
+    LIMIT ?
+  `, [searchTerm, searchTerm, searchTerm, searchTerm, parseInt(limit)]);
+  
+  res.json(clients);
+}));
+
+/**
  * Get client by ID
  * GET /api/v1/clients/:id
  */
@@ -417,37 +448,6 @@ router.get('/:id/appointments', asyncHandler(async (req, res) => {
   `, [...params, parseInt(limit)]);
   
   res.json(appointments);
-}));
-
-/**
- * Search clients
- * GET /api/v1/clients/search
- */
-router.get('/search', asyncHandler(async (req, res) => {
-  const { q, limit = 10 } = req.query;
-  
-  if (!q || q.length < 2) {
-    return res.json([]);
-  }
-  
-  const searchTerm = `%${q}%`;
-  
-  const clients = await dbConnection.all(`
-    SELECT 
-      id,
-      first_name,
-      last_name,
-      email,
-      phone,
-      first_name || ' ' || last_name as full_name
-    FROM clients 
-    WHERE is_active = 1 
-      AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR phone LIKE ?)
-    ORDER BY last_name, first_name
-    LIMIT ?
-  `, [searchTerm, searchTerm, searchTerm, searchTerm, parseInt(limit)]);
-  
-  res.json(clients);
 }));
 
 module.exports = router;
