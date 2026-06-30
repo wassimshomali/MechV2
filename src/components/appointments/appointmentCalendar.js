@@ -5,6 +5,7 @@
 import appointmentService from '../../services/appointmentService.js';
 import { formatDate } from '../../utils/formatters.js';
 import { renderPageHeader, renderPrimaryButton, statusBadge } from '../../utils/pageHelpers.js';
+import { t } from '../../i18n/index.js';
 
 export class AppointmentCalendar {
     constructor() {
@@ -14,7 +15,7 @@ export class AppointmentCalendar {
     async render() {
         return `
             <div class="space-y-6">
-                ${renderPageHeader('Appointment Calendar', 'Monthly view of scheduled work', renderPrimaryButton('/appointments/new', 'New Appointment'))}
+                ${renderPageHeader(t('appointments.calendar'), t('appointments.subtitle'), renderPrimaryButton('/appointments/new', t('appointments.newAppointment')))}
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center justify-between mb-6">
                         <button id="cal-prev" class="p-2 rounded-md hover:bg-gray-100"><i data-feather="chevron-left"></i></button>
@@ -53,7 +54,15 @@ export class AppointmentCalendar {
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const today = new Date().toISOString().split('T')[0];
 
-        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const dayNames = [
+            t('days.sun'),
+            t('days.mon'),
+            t('days.tue'),
+            t('days.wed'),
+            t('days.thu'),
+            t('days.fri'),
+            t('days.sat'),
+        ];
         let html = dayNames.map(d => `<div class="font-medium text-gray-500 py-2">${d}</div>`).join('');
 
         for (let i = 0; i < firstDay; i++) html += '<div></div>';
@@ -77,7 +86,7 @@ export class AppointmentCalendar {
         const dayAppts = appointments.filter(a => a.appointmentDate === date);
         const el = document.getElementById('cal-day-detail');
         if (!dayAppts.length) {
-            el.innerHTML = `<p class="text-gray-500">No appointments on ${formatDate(date, 'short')}.</p>`;
+            el.innerHTML = `<p class="text-gray-500">${t('appointments.empty')}</p>`;
             return;
         }
         el.innerHTML = `

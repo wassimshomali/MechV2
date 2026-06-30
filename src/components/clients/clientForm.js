@@ -4,23 +4,26 @@
 
 import { Form } from '../common/form.js';
 import clientService from '../../services/clientService.js';
+import { t } from '../../i18n/index.js';
 
-const CLIENT_FIELDS = [
-    { name: 'firstName', label: 'First Name', type: 'text', required: true },
-    { name: 'lastName', label: 'Last Name', type: 'text', required: true },
-    { name: 'email', label: 'Email', type: 'email' },
-    { name: 'phone', label: 'Phone', type: 'tel' },
-    { name: 'address', label: 'Address', type: 'text' },
-    { name: 'city', label: 'City', type: 'text' },
-    { name: 'state', label: 'State', type: 'text' },
-    { name: 'zipCode', label: 'ZIP Code', type: 'text' },
-    { name: 'preferredContactMethod', label: 'Preferred Contact', type: 'select', options: [
-        { value: 'phone', label: 'Phone' },
-        { value: 'email', label: 'Email' },
-        { value: 'sms', label: 'SMS' },
-    ]},
-    { name: 'notes', label: 'Notes', type: 'textarea' },
-];
+function getClientFields() {
+    return [
+        { name: 'firstName', label: t('fields.firstName'), type: 'text', required: true },
+        { name: 'lastName', label: t('fields.lastName'), type: 'text', required: true },
+        { name: 'email', label: t('fields.email'), type: 'email' },
+        { name: 'phone', label: t('fields.phone'), type: 'tel' },
+        { name: 'address', label: t('fields.address'), type: 'text' },
+        { name: 'city', label: t('fields.city'), type: 'text' },
+        { name: 'state', label: t('fields.state'), type: 'text' },
+        { name: 'zipCode', label: t('fields.zipCode'), type: 'text' },
+        { name: 'preferredContactMethod', label: t('fields.preferredContact'), type: 'select', options: [
+            { value: 'phone', label: t('fields.contactMethodPhone') },
+            { value: 'email', label: t('fields.contactMethodEmail') },
+            { value: 'sms', label: t('fields.contactMethodSms') },
+        ]},
+        { name: 'notes', label: t('fields.notes'), type: 'textarea' },
+    ];
+}
 
 export class ClientForm {
     constructor(params = {}) {
@@ -32,7 +35,7 @@ export class ClientForm {
     async render() {
         return `
             <div class="max-w-3xl mx-auto space-y-6">
-                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? 'Edit' : 'Add'} Client</h1>
+                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? t('clients.editClient') : t('clients.addClientTitle')}</h1>
                 <div class="bg-white rounded-lg shadow p-6">
                     <div id="client-form-container"></div>
                 </div>
@@ -60,17 +63,17 @@ export class ClientForm {
 
         this.form = new Form({
             containerId: 'client-form-container',
-            fields: CLIENT_FIELDS,
+            fields: getClientFields(),
             data,
-            submitText: this.isEdit ? 'Update Client' : 'Create Client',
+            submitText: this.isEdit ? t('clients.updateClient') : t('clients.createClient'),
             onSubmit: async (formData) => {
                 if (this.isEdit) {
                     await clientService.updateClient(this.id, formData);
-                    window.showNotification('Client updated successfully', 'success');
+                    window.showNotification(t('clients.updated'), 'success');
                     window.location.hash = `/clients/${this.id}`;
                 } else {
                     const created = await clientService.createClient(formData);
-                    window.showNotification('Client created successfully', 'success');
+                    window.showNotification(t('clients.created'), 'success');
                     window.location.hash = `/clients/${created.id}`;
                 }
             },

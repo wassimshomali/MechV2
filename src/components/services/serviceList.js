@@ -7,6 +7,7 @@ import { Modal } from '../common/modal.js';
 import serviceService from '../../services/serviceService.js';
 import { formatCurrency, formatDuration } from '../../utils/formatters.js';
 import { renderPageHeader, renderPrimaryButton } from '../../utils/pageHelpers.js';
+import { t } from '../../i18n/index.js';
 
 export class ServiceList {
     constructor() {
@@ -18,7 +19,7 @@ export class ServiceList {
     async render() {
         return `
             <div class="space-y-6">
-                ${renderPageHeader('Service Templates', 'Predefined services and labor rates', renderPrimaryButton('/services/new', 'Add Service'))}
+                ${renderPageHeader(t('services.title'), t('services.subtitle'), renderPrimaryButton('/services/new', t('services.addService')))}
                 <div id="services-table"></div>
             </div>
         `;
@@ -28,24 +29,24 @@ export class ServiceList {
         this.table = new DataTable({
             containerId: 'services-table',
             columns: [
-                { key: 'name', label: 'Service' },
-                { key: 'categoryName', label: 'Category', formatter: v => v || '-' },
-                { key: 'estimatedDuration', label: 'Duration', formatter: v => formatDuration(v) },
-                { key: 'laborRate', label: 'Labor Rate', formatter: v => formatCurrency(v) },
-                { key: 'usageCount', label: 'Used', formatter: v => v ?? 0 },
+                { key: 'name', label: t('services.service') },
+                { key: 'categoryName', label: t('services.category'), formatter: v => v || '-' },
+                { key: 'estimatedDuration', label: t('services.duration'), formatter: v => formatDuration(v) },
+                { key: 'laborRate', label: t('services.laborRate'), formatter: v => formatCurrency(v) },
+                { key: 'usageCount', label: t('services.used'), formatter: v => v ?? 0 },
                 {
                     key: 'actions',
-                    label: 'Actions',
+                    label: t('common.actions'),
                     actions: [
-                        { name: 'edit', icon: 'edit', label: 'Edit', color: 'green', handler: (row) => window.location.hash = `/services/${row.id}/edit` },
-                        { name: 'delete', icon: 'trash-2', label: 'Delete', color: 'red', handler: (row) => this.confirmDelete(row) },
+                        { name: 'edit', icon: 'edit', label: t('common.edit'), color: 'green', handler: (row) => window.location.hash = `/services/${row.id}/edit` },
+                        { name: 'delete', icon: 'trash-2', label: t('common.delete'), color: 'red', handler: (row) => this.confirmDelete(row) },
                     ]
                 }
             ],
             searchable: true,
             onPageChange: (page) => { this.currentPage = page; this.loadData(); },
             onSearch: (q) => { this.currentSearch = q; this.currentPage = 1; this.loadData(); },
-            emptyMessage: 'No services found.',
+            emptyMessage: t('services.empty'),
         });
         await this.loadData();
     }
@@ -56,15 +57,15 @@ export class ServiceList {
             const response = await serviceService.getServices({ page: this.currentPage, limit: 20, search: this.currentSearch });
             this.table.update(response.services, response.pagination);
         } catch (error) {
-            window.showNotification('Error loading services', 'error');
+            window.showNotification(t('services.errorLoading'), 'error');
             this.table.setLoading(false);
         }
     }
 
     confirmDelete(service) {
-        Modal.confirm('Delete Service', `Delete "${service.name}"?`, async () => {
+        Modal.confirm(t('services.deleteTitle'), t('services.deleteMessage', { name: service.name }), async () => {
             await serviceService.deleteService(service.id);
-            window.showNotification('Service deleted', 'success');
+            window.showNotification(t('services.deleted'), 'success');
             this.loadData();
         });
     }

@@ -3,6 +3,8 @@
  * Reusable modal dialog component
  */
 
+import { t } from '../../i18n/index.js';
+
 export class Modal {
     constructor(options = {}) {
         this.id = options.id || `modal-${Date.now()}`;
@@ -46,7 +48,7 @@ export class Modal {
                                 </h3>
                                 ${this.closable ? `
                                     <button type="button" class="modal-close bg-white rounded-md text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                        <span class="sr-only">Close</span>
+                                        <span class="sr-only">${t('common.close')}</span>
                                         <i data-feather="x" class="w-6 h-6"></i>
                                     </button>
                                 ` : ''}
@@ -302,7 +304,7 @@ export class Modal {
         
         modal.setFooter(`
             <button type="button" onclick="document.getElementById('${modal.id}').querySelector('.modal-close').click()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                OK
+                ${t('common.ok')}
             </button>
         `);
         
@@ -340,10 +342,10 @@ export class Modal {
         
         modal.setFooter(`
             <button type="button" id="confirm-btn-${modal.id}" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
-                Confirm
+                ${t('common.confirm')}
             </button>
             <button type="button" id="cancel-btn-${modal.id}" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                Cancel
+                ${t('common.cancel')}
             </button>
         `);
         
@@ -388,10 +390,10 @@ export class Modal {
         
         modal.setFooter(`
             <button type="submit" form="modal-form-${Date.now()}" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                Save
+                ${t('common.save')}
             </button>
             <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                Cancel
+                ${t('common.cancel')}
             </button>
         `);
         
@@ -427,7 +429,7 @@ export class Modal {
      * @param {string} message - Loading message
      * @returns {Modal} - Modal instance
      */
-    static loading(message = 'Loading...') {
+    static loading(message = t('app.loading')) {
         const content = `
             <div class="text-center py-8">
                 <div class="loading mx-auto mb-4"></div>

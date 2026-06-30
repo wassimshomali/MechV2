@@ -6,6 +6,30 @@ import { Form } from '../common/form.js';
 import workOrderService from '../../services/workOrderService.js';
 import clientService from '../../services/clientService.js';
 import vehicleService from '../../services/vehicleService.js';
+import { t } from '../../i18n/index.js';
+
+function getWorkOrderFields(clientOptions, vehicleOptions) {
+    return [
+        { name: 'clientId', label: t('fields.client'), type: 'select', required: true, options: clientOptions },
+        { name: 'vehicleId', label: t('fields.vehicle'), type: 'select', required: true, options: vehicleOptions },
+        { name: 'description', label: t('fields.description'), type: 'textarea', required: true },
+        { name: 'diagnosis', label: t('fields.diagnosis'), type: 'textarea' },
+        { name: 'status', label: t('fields.status'), type: 'select', options: [
+            { value: 'open', label: t('status.open') },
+            { value: 'in_progress', label: t('status.in_progress') },
+            { value: 'completed', label: t('status.completed') },
+            { value: 'cancelled', label: t('status.cancelled') },
+        ]},
+        { name: 'priority', label: t('fields.priority'), type: 'select', options: [
+            { value: 'low', label: t('priority.low') },
+            { value: 'normal', label: t('priority.normal') },
+            { value: 'high', label: t('priority.high') },
+        ]},
+        { name: 'totalLaborHours', label: t('fields.laborHours'), type: 'number' },
+        { name: 'totalPartsCost', label: t('fields.partsCost'), type: 'number' },
+        { name: 'totalLaborCost', label: t('fields.laborCost'), type: 'number' },
+    ];
+}
 
 export class WorkOrderForm {
     constructor(params = {}) {
@@ -16,7 +40,7 @@ export class WorkOrderForm {
     async render() {
         return `
             <div class="max-w-3xl mx-auto space-y-6">
-                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? 'Edit' : 'New'} Work Order</h1>
+                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? t('workOrders.editWorkOrder') : t('workOrders.newWorkOrder')}</h1>
                 <div class="bg-white rounded-lg shadow p-6">
                     <div id="work-order-form-container"></div>
                 </div>
@@ -29,6 +53,9 @@ export class WorkOrderForm {
             clientService.getClients({ limit: 100 }),
             vehicleService.getVehicles({ limit: 100 }),
         ]);
+
+        const clientOptions = clientsRes.clients.map(c => ({ value: c.id, label: `${c.firstName} ${c.lastName}` }));
+        const vehicleOptions = vehiclesRes.vehicles.map(v => ({ value: v.id, label: `${v.year} ${v.make} ${v.model}` }));
 
         let data = { status: 'open', priority: 'normal' };
         if (this.isEdit) {
@@ -46,32 +73,11 @@ export class WorkOrderForm {
             };
         }
 
-        const fields = [
-            { name: 'clientId', label: 'Client', type: 'select', required: true, options: clientsRes.clients.map(c => ({ value: c.id, label: `${c.firstName} ${c.lastName}` })) },
-            { name: 'vehicleId', label: 'Vehicle', type: 'select', required: true, options: vehiclesRes.vehicles.map(v => ({ value: v.id, label: `${v.year} ${v.make} ${v.model}` })) },
-            { name: 'description', label: 'Description', type: 'textarea', required: true },
-            { name: 'diagnosis', label: 'Diagnosis', type: 'textarea' },
-            { name: 'status', label: 'Status', type: 'select', options: [
-                { value: 'open', label: 'Open' },
-                { value: 'in_progress', label: 'In Progress' },
-                { value: 'completed', label: 'Completed' },
-                { value: 'cancelled', label: 'Cancelled' },
-            ]},
-            { name: 'priority', label: 'Priority', type: 'select', options: [
-                { value: 'low', label: 'Low' },
-                { value: 'normal', label: 'Normal' },
-                { value: 'high', label: 'High' },
-            ]},
-            { name: 'totalLaborHours', label: 'Labor Hours', type: 'number' },
-            { name: 'totalPartsCost', label: 'Parts Cost', type: 'number' },
-            { name: 'totalLaborCost', label: 'Labor Cost', type: 'number' },
-        ];
-
         const form = new Form({
             containerId: 'work-order-form-container',
-            fields,
+            fields: getWorkOrderFields(clientOptions, vehicleOptions),
             data,
-            submitText: this.isEdit ? 'Update Work Order' : 'Create Work Order',
+            submitText: this.isEdit ? t('workOrders.updateWorkOrder') : t('workOrders.createWorkOrder'),
             onSubmit: async (formData) => {
                 const payload = {
                     ...formData,

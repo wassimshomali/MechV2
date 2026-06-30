@@ -7,6 +7,7 @@ import { Modal } from '../common/modal.js';
 import inventoryService from '../../services/inventoryService.js';
 import { formatCurrency } from '../../utils/formatters.js';
 import { renderPageHeader, renderPrimaryButton } from '../../utils/pageHelpers.js';
+import { t } from '../../i18n/index.js';
 
 export class InventoryList {
     constructor(params = {}) {
@@ -17,12 +18,12 @@ export class InventoryList {
     }
 
     async render() {
-        const title = this.filter === 'low-stock' ? 'Low Stock Items' : 'Inventory';
+        const title = this.filter === 'low-stock' ? t('inventory.lowStockTitle') : t('inventory.title');
         return `
             <div class="space-y-6">
-                ${renderPageHeader(title, 'Parts and supplies tracking', `
-                    ${this.filter !== 'low-stock' ? renderPrimaryButton('/inventory/low-stock', 'Low Stock', 'alert-triangle') : ''}
-                    ${renderPrimaryButton('/inventory/new', 'Add Item')}
+                ${renderPageHeader(title, t('inventory.subtitle'), `
+                    ${this.filter !== 'low-stock' ? renderPrimaryButton('/inventory/low-stock', t('inventory.lowStock'), 'alert-triangle') : ''}
+                    ${renderPrimaryButton('/inventory/new', t('inventory.addItem'))}
                 `)}
                 <div id="inventory-table"></div>
             </div>
@@ -33,29 +34,29 @@ export class InventoryList {
         this.table = new DataTable({
             containerId: 'inventory-table',
             columns: [
-                { key: 'name', label: 'Item', formatter: (v, row) => `
+                { key: 'name', label: t('inventory.item'), formatter: (v, row) => `
                     <div class="text-sm font-medium text-gray-900">${v}</div>
                     <div class="text-sm text-gray-500">${row.partNumber || ''}</div>
                 `},
-                { key: 'categoryName', label: 'Category', formatter: v => v || '-' },
-                { key: 'quantityOnHand', label: 'Qty', formatter: (v, row) => {
+                { key: 'categoryName', label: t('inventory.category'), formatter: v => v || '-' },
+                { key: 'quantityOnHand', label: t('inventory.quantity'), formatter: (v, row) => {
                     const low = v <= row.minimumQuantity;
                     return `<span class="${low ? 'text-red-600 font-semibold' : ''}">${v}</span>`;
                 }},
-                { key: 'sellingPrice', label: 'Price', formatter: v => formatCurrency(v) },
+                { key: 'sellingPrice', label: t('inventory.price'), formatter: v => formatCurrency(v) },
                 {
                     key: 'actions',
-                    label: 'Actions',
+                    label: t('common.actions'),
                     actions: [
-                        { name: 'edit', icon: 'edit', label: 'Edit', color: 'green', handler: (row) => window.location.hash = `/inventory/${row.id}/edit` },
-                        { name: 'delete', icon: 'trash-2', label: 'Delete', color: 'red', handler: (row) => this.confirmDelete(row) },
+                        { name: 'edit', icon: 'edit', label: t('common.edit'), color: 'green', handler: (row) => window.location.hash = `/inventory/${row.id}/edit` },
+                        { name: 'delete', icon: 'trash-2', label: t('common.delete'), color: 'red', handler: (row) => this.confirmDelete(row) },
                     ]
                 }
             ],
             searchable: true,
             onPageChange: (page) => { this.currentPage = page; this.loadData(); },
             onSearch: (q) => { this.currentSearch = q; this.currentPage = 1; this.loadData(); },
-            emptyMessage: 'No inventory items found.',
+            emptyMessage: t('inventory.empty'),
         });
         await this.loadData();
     }
@@ -71,15 +72,15 @@ export class InventoryList {
                 this.table.update(response.items, response.pagination);
             }
         } catch (error) {
-            window.showNotification('Error loading inventory', 'error');
+            window.showNotification(t('inventory.errorLoading'), 'error');
             this.table.setLoading(false);
         }
     }
 
     confirmDelete(item) {
-        Modal.confirm('Delete Item', `Delete "${item.name}"?`, async () => {
+        Modal.confirm(t('inventory.deleteTitle'), t('inventory.deleteMessage', { name: item.name }), async () => {
             await inventoryService.deleteInventoryItem(item.id);
-            window.showNotification('Item deleted', 'success');
+            window.showNotification(t('inventory.deleted'), 'success');
             this.loadData();
         });
     }

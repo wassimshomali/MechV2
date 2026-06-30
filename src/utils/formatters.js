@@ -3,6 +3,8 @@
  * Functions for formatting dates, currency, phone numbers, etc.
  */
 
+import { t, tStatus, tPriority, getLocale } from '../i18n/index.js';
+
 /**
  * Format currency values
  * @param {number} amount - Amount to format
@@ -32,12 +34,14 @@ export function formatDate(date, format = 'short') {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     
     if (isNaN(dateObj.getTime())) {
-        return 'Invalid Date';
+        return '';
     }
+    
+    const locale = getLocale();
     
     switch (format) {
         case 'long':
-            return dateObj.toLocaleDateString('en-US', {
+            return dateObj.toLocaleDateString(locale, {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -49,7 +53,7 @@ export function formatDate(date, format = 'short') {
             
         case 'short':
         default:
-            return dateObj.toLocaleDateString('en-US');
+            return dateObj.toLocaleDateString(locale);
     }
 }
 
@@ -66,7 +70,7 @@ export function formatTime(time, use24Hour = false) {
     const date = new Date();
     date.setHours(parseInt(hours), parseInt(minutes));
     
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString(getLocale(), {
         hour: 'numeric',
         minute: '2-digit',
         hour12: !use24Hour
@@ -87,13 +91,16 @@ export function formatRelativeDate(date) {
     const diffDays = Math.floor(diffHours / 24);
     
     if (diffSeconds < 60) {
-        return 'Just now';
+        return t('time.justNow');
     } else if (diffMinutes < 60) {
-        return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
+        const key = diffMinutes === 1 ? 'time.minutesAgo' : 'time.minutesAgo_plural';
+        return t(key, { count: diffMinutes });
     } else if (diffHours < 24) {
-        return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        const key = diffHours === 1 ? 'time.hoursAgo' : 'time.hoursAgo_plural';
+        return t(key, { count: diffHours });
     } else if (diffDays < 30) {
-        return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        const key = diffDays === 1 ? 'time.daysAgo' : 'time.daysAgo_plural';
+        return t(key, { count: diffDays });
     } else {
         return formatDate(date);
     }
@@ -266,12 +273,7 @@ export function formatInvoiceNumber(invoiceNumber) {
  * @returns {string} - Formatted status
  */
 export function formatStatus(status) {
-    if (!status) return '';
-    
-    return status
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+    return tStatus(status);
 }
 
 /**
@@ -280,9 +282,7 @@ export function formatStatus(status) {
  * @returns {string} - Formatted priority
  */
 export function formatPriority(priority) {
-    if (!priority) return '';
-    
-    return priority.charAt(0).toUpperCase() + priority.slice(1);
+    return tPriority(priority);
 }
 
 /**

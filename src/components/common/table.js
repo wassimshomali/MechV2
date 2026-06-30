@@ -4,6 +4,7 @@
  */
 
 import { formatTableCell, calculatePagination } from '../../utils/index.js';
+import { t } from '../../i18n/index.js';
 
 export class DataTable {
     constructor(options = {}) {
@@ -20,7 +21,7 @@ export class DataTable {
         this.onSearch = options.onSearch || null;
         this.onRowClick = options.onRowClick || null;
         this.onSelect = options.onSelect || null;
-        this.emptyMessage = options.emptyMessage || 'No data available';
+        this.emptyMessage = options.emptyMessage || t('common.noData');
         this.loading = options.loading || false;
         
         this.selectedRows = new Set();
@@ -52,7 +53,7 @@ export class DataTable {
                     <input 
                         type="text" 
                         id="table-search"
-                        placeholder="Search..." 
+                        placeholder="${t('common.search')}" 
                         class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                     <i data-feather="search" class="absolute left-3 top-2.5 text-gray-400 w-4 h-4"></i>
@@ -104,7 +105,7 @@ export class DataTable {
                         <tr>
                             ${this.selectable ? '<th class="w-4 p-4"><input type="checkbox" id="select-all" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"></th>' : ''}
                             ${this.columns.map(column => this.renderHeaderCell(column)).join('')}
-                            ${this.hasRowActions() ? '<th class="relative py-3.5 pl-3 pr-4 sm:pr-6"><span class="sr-only">Actions</span></th>' : ''}
+                            ${this.hasRowActions() ? `<th class="relative py-3.5 pl-3 pr-4 sm:pr-6"><span class="sr-only">${t('common.actions')}</span></th>` : ''}
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-white">
@@ -252,7 +253,7 @@ export class DataTable {
             <div class="bg-white shadow rounded-lg">
                 <div class="text-center py-12">
                     <i data-feather="inbox" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
-                    <h3 class="text-sm font-medium text-gray-900 mb-2">No data found</h3>
+                    <h3 class="text-sm font-medium text-gray-900 mb-2">${t('common.noDataFound')}</h3>
                     <p class="text-sm text-gray-500">${this.emptyMessage}</p>
                 </div>
             </div>
@@ -275,19 +276,19 @@ export class DataTable {
                         class="pagination-btn relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${!hasPrev ? 'opacity-50 cursor-not-allowed' : ''}"
                         data-page="${page - 1}" ${!hasPrev ? 'disabled' : ''}
                     >
-                        Previous
+                        ${t('common.previous')}
                     </button>
                     <button 
                         class="pagination-btn ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${!hasNext ? 'opacity-50 cursor-not-allowed' : ''}"
                         data-page="${page + 1}" ${!hasNext ? 'disabled' : ''}
                     >
-                        Next
+                        ${t('common.next')}
                     </button>
                 </div>
                 <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                     <div>
                         <p class="text-sm text-gray-700">
-                            Showing <span class="font-medium">${startItem}</span> to <span class="font-medium">${endItem}</span> of <span class="font-medium">${total}</span> results
+                            ${t('common.showingResults', { start: startItem, end: endItem, total })}
                         </p>
                     </div>
                     <div>

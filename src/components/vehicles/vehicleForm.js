@@ -5,6 +5,29 @@
 import { Form } from '../common/form.js';
 import vehicleService from '../../services/vehicleService.js';
 import clientService from '../../services/clientService.js';
+import { t } from '../../i18n/index.js';
+
+function getVehicleFields(clientOptions) {
+    return [
+        { name: 'clientId', label: t('vehicles.owner'), type: 'select', required: true, options: clientOptions },
+        { name: 'year', label: t('fields.year'), type: 'number', required: true },
+        { name: 'make', label: t('fields.make'), type: 'text', required: true },
+        { name: 'model', label: t('fields.model'), type: 'text', required: true },
+        { name: 'vin', label: t('fields.vin'), type: 'text' },
+        { name: 'licensePlate', label: t('fields.licensePlate'), type: 'text' },
+        { name: 'color', label: t('fields.color'), type: 'text' },
+        { name: 'mileage', label: t('fields.mileage'), type: 'number' },
+        { name: 'fuelType', label: t('fields.fuelType'), type: 'select', options: [
+            { value: 'gasoline', label: 'Gasoline' },
+            { value: 'diesel', label: 'Diesel' },
+            { value: 'electric', label: 'Electric' },
+            { value: 'hybrid', label: 'Hybrid' },
+        ]},
+        { name: 'engineType', label: t('fields.engine'), type: 'text' },
+        { name: 'transmissionType', label: t('fields.transmission'), type: 'text' },
+        { name: 'notes', label: t('fields.notes'), type: 'textarea' },
+    ];
+}
 
 export class VehicleForm {
     constructor(params = {}) {
@@ -17,7 +40,7 @@ export class VehicleForm {
     async render() {
         return `
             <div class="max-w-3xl mx-auto space-y-6">
-                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? 'Edit' : 'Add'} Vehicle</h1>
+                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? t('vehicles.editVehicle') : t('vehicles.addVehicleTitle')}</h1>
                 <div class="bg-white rounded-lg shadow p-6">
                     <div id="vehicle-form-container"></div>
                 </div>
@@ -51,31 +74,11 @@ export class VehicleForm {
             };
         }
 
-        const fields = [
-            { name: 'clientId', label: 'Owner', type: 'select', required: true, options: this.clientOptions },
-            { name: 'year', label: 'Year', type: 'number', required: true },
-            { name: 'make', label: 'Make', type: 'text', required: true },
-            { name: 'model', label: 'Model', type: 'text', required: true },
-            { name: 'vin', label: 'VIN', type: 'text' },
-            { name: 'licensePlate', label: 'License Plate', type: 'text' },
-            { name: 'color', label: 'Color', type: 'text' },
-            { name: 'mileage', label: 'Mileage', type: 'number' },
-            { name: 'fuelType', label: 'Fuel Type', type: 'select', options: [
-                { value: 'gasoline', label: 'Gasoline' },
-                { value: 'diesel', label: 'Diesel' },
-                { value: 'electric', label: 'Electric' },
-                { value: 'hybrid', label: 'Hybrid' },
-            ]},
-            { name: 'engineType', label: 'Engine', type: 'text' },
-            { name: 'transmissionType', label: 'Transmission', type: 'text' },
-            { name: 'notes', label: 'Notes', type: 'textarea' },
-        ];
-
         this.form = new Form({
             containerId: 'vehicle-form-container',
-            fields,
+            fields: getVehicleFields(this.clientOptions),
             data,
-            submitText: this.isEdit ? 'Update Vehicle' : 'Create Vehicle',
+            submitText: this.isEdit ? t('vehicles.updateVehicle') : t('vehicles.createVehicle'),
             onSubmit: async (formData) => {
                 const payload = { ...formData, clientId: Number(formData.clientId), year: Number(formData.year), mileage: formData.mileage ? Number(formData.mileage) : null };
                 if (this.isEdit) {

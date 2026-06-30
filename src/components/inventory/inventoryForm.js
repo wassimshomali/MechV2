@@ -4,6 +4,22 @@
 
 import { Form } from '../common/form.js';
 import inventoryService from '../../services/inventoryService.js';
+import { t } from '../../i18n/index.js';
+
+function getInventoryFields(categoryOptions) {
+    return [
+        { name: 'name', label: t('fields.name'), type: 'text', required: true },
+        { name: 'partNumber', label: t('fields.partNumber'), type: 'text' },
+        { name: 'categoryId', label: t('fields.category'), type: 'select', options: categoryOptions },
+        { name: 'description', label: t('fields.description'), type: 'textarea' },
+        { name: 'quantityOnHand', label: t('fields.quantity'), type: 'number' },
+        { name: 'minimumQuantity', label: t('fields.minimumQuantity'), type: 'number' },
+        { name: 'reorderPoint', label: t('fields.reorderPoint'), type: 'number' },
+        { name: 'costPrice', label: t('fields.costPrice'), type: 'number' },
+        { name: 'sellingPrice', label: t('fields.sellingPrice'), type: 'number' },
+        { name: 'location', label: t('fields.location'), type: 'text' },
+    ];
+}
 
 export class InventoryForm {
     constructor(params = {}) {
@@ -15,7 +31,7 @@ export class InventoryForm {
     async render() {
         return `
             <div class="max-w-3xl mx-auto space-y-6">
-                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? 'Edit' : 'Add'} Inventory Item</h1>
+                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? t('inventory.editItem') : t('inventory.addItemTitle')}</h1>
                 <div class="bg-white rounded-lg shadow p-6">
                     <div id="inventory-form-container"></div>
                 </div>
@@ -44,24 +60,11 @@ export class InventoryForm {
             };
         }
 
-        const fields = [
-            { name: 'name', label: 'Item Name', type: 'text', required: true },
-            { name: 'partNumber', label: 'Part Number', type: 'text' },
-            { name: 'categoryId', label: 'Category', type: 'select', options: categoryOptions },
-            { name: 'description', label: 'Description', type: 'textarea' },
-            { name: 'quantityOnHand', label: 'Quantity On Hand', type: 'number' },
-            { name: 'minimumQuantity', label: 'Minimum Quantity', type: 'number' },
-            { name: 'reorderPoint', label: 'Reorder Point', type: 'number' },
-            { name: 'costPrice', label: 'Cost Price', type: 'number' },
-            { name: 'sellingPrice', label: 'Selling Price', type: 'number' },
-            { name: 'location', label: 'Storage Location', type: 'text' },
-        ];
-
         this.form = new Form({
             containerId: 'inventory-form-container',
-            fields,
+            fields: getInventoryFields(categoryOptions),
             data,
-            submitText: this.isEdit ? 'Update Item' : 'Create Item',
+            submitText: this.isEdit ? t('inventory.updateItem') : t('inventory.createItem'),
             onSubmit: async (formData) => {
                 const payload = {
                     ...formData,

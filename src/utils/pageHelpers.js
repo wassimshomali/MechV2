@@ -1,3 +1,5 @@
+import { t } from '../i18n/index.js';
+
 /**
  * Shared page layout helpers for MoMech components
  */
@@ -75,10 +77,11 @@ export function renderDetailGrid(items) {
     `;
 }
 
-export function renderBackButton(hash, label = 'Back') {
+export function renderBackButton(hash, label = null) {
+    const text = label || t('common.back');
     return `
         <button onclick="window.location.hash = '${hash}'" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-            <i data-feather="arrow-left" class="w-4 h-4 mr-1 inline"></i>${label}
+            <i data-feather="arrow-left" class="w-4 h-4 mr-1 inline"></i>${text}
         </button>
     `;
 }

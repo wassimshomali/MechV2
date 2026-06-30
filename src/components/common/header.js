@@ -3,13 +3,16 @@
  * Handles top navigation and page title
  */
 
+import { t, getLocale, setLocale } from '../../i18n/index.js';
+
 export class Header {
     constructor() {
-        this.title = 'Dashboard';
+        this.title = t('titles.dashboard');
         this.notifications = [];
     }
     
     async render() {
+        const locale = getLocale();
         const headerHTML = `
             <header class="bg-white shadow-sm z-10">
                 <div class="px-6 py-4 flex items-center justify-between">
@@ -19,18 +22,21 @@ export class Header {
                     </div>
                     
                     <div class="flex items-center space-x-4">
-                        <!-- Quick Search -->
+                        <div class="relative hidden md:flex items-center border border-gray-200 rounded-md overflow-hidden">
+                            <button type="button" data-locale="fr-CA" class="locale-btn px-3 py-1.5 text-sm font-medium ${locale === 'fr-CA' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}">${t('language.fr')}</button>
+                            <button type="button" data-locale="en-CA" class="locale-btn px-3 py-1.5 text-sm font-medium ${locale === 'en-CA' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}">${t('language.en')}</button>
+                        </div>
+
                         <div class="relative hidden md:block">
                             <input 
                                 type="text" 
                                 id="global-search"
-                                placeholder="Search clients, vehicles..." 
+                                placeholder="${t('header.searchPlaceholder')}" 
                                 class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
                             <i data-feather="search" class="absolute left-3 top-2.5 text-gray-400 w-4 h-4"></i>
                         </div>
                         
-                        <!-- Notifications -->
                         <div class="relative">
                             <button 
                                 id="notifications-btn"
@@ -42,25 +48,23 @@ export class Header {
                                 </span>
                             </button>
                             
-                            <!-- Notifications Dropdown -->
                             <div id="notifications-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg border border-gray-200 z-50 hidden">
                                 <div class="p-4 border-b border-gray-200">
                                     <div class="flex items-center justify-between">
-                                        <h3 class="text-lg font-medium text-gray-900">Notifications</h3>
+                                        <h3 class="text-lg font-medium text-gray-900">${t('header.notifications')}</h3>
                                         <button id="mark-all-read" class="text-sm text-blue-600 hover:text-blue-500">
-                                            Mark all read
+                                            ${t('header.markAllRead')}
                                         </button>
                                     </div>
                                 </div>
                                 <div id="notifications-list" class="max-h-96 overflow-y-auto">
                                     <div class="p-4 text-center text-gray-500">
-                                        No new notifications
+                                        ${t('header.noNotifications')}
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Quick Actions -->
                         <div class="relative">
                             <button 
                                 id="quick-actions-btn"
@@ -69,51 +73,48 @@ export class Header {
                                 <i data-feather="plus" class="w-5 h-5"></i>
                             </button>
                             
-                            <!-- Quick Actions Dropdown -->
                             <div id="quick-actions-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50 hidden">
                                 <div class="py-2">
                                     <a href="#/clients/new" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i data-feather="user-plus" class="w-4 h-4 mr-3"></i>
-                                        Add Client
+                                        ${t('header.addClient')}
                                     </a>
                                     <a href="#/vehicles/new" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i data-feather="car" class="w-4 h-4 mr-3"></i>
-                                        Add Vehicle
+                                        ${t('header.addVehicle')}
                                     </a>
                                     <a href="#/appointments/new" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i data-feather="calendar" class="w-4 h-4 mr-3"></i>
-                                        New Appointment
+                                        ${t('header.newAppointment')}
                                     </a>
                                     <a href="#/work-orders/new" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i data-feather="clipboard" class="w-4 h-4 mr-3"></i>
-                                        New Work Order
+                                        ${t('header.newWorkOrder')}
                                     </a>
                                     <a href="#/financial/invoices/new" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i data-feather="file-text" class="w-4 h-4 mr-3"></i>
-                                        Create Invoice
+                                        ${t('header.createInvoice')}
                                     </a>
                                     <a href="#/inventory/new" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i data-feather="package" class="w-4 h-4 mr-3"></i>
-                                        Add Inventory
+                                        ${t('header.addInventory')}
                                     </a>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Help -->
                         <button 
                             id="help-btn"
                             class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            title="Help & Support"
+                            title="${t('header.help')}"
                         >
                             <i data-feather="help-circle" class="w-5 h-5"></i>
                         </button>
                         
-                        <!-- Settings -->
                         <button 
                             id="settings-btn"
                             class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            title="Settings"
+                            title="${t('header.settings')}"
                         >
                             <i data-feather="settings" class="w-5 h-5"></i>
                         </button>
@@ -122,19 +123,18 @@ export class Header {
             </header>
         `;
         
-        // Insert into header container
         const container = document.getElementById('header-container');
         container.innerHTML = headerHTML;
         
-        // Initialize header functionality
         this.init();
-        
-        // Replace feather icons
         replaceFeatherIcons();
     }
     
     init() {
-        // Global search functionality
+        document.querySelectorAll('.locale-btn').forEach((btn) => {
+            btn.addEventListener('click', () => setLocale(btn.dataset.locale));
+        });
+
         const globalSearch = document.getElementById('global-search');
         if (globalSearch) {
             globalSearch.addEventListener('input', (e) => this.handleGlobalSearch(e.target.value));
@@ -145,7 +145,6 @@ export class Header {
             });
         }
         
-        // Notifications dropdown
         const notificationsBtn = document.getElementById('notifications-btn');
         const notificationsDropdown = document.getElementById('notifications-dropdown');
         if (notificationsBtn && notificationsDropdown) {
@@ -155,7 +154,6 @@ export class Header {
             });
         }
         
-        // Quick actions dropdown
         const quickActionsBtn = document.getElementById('quick-actions-btn');
         const quickActionsDropdown = document.getElementById('quick-actions-dropdown');
         if (quickActionsBtn && quickActionsDropdown) {
@@ -165,25 +163,21 @@ export class Header {
             });
         }
         
-        // Help button
         const helpBtn = document.getElementById('help-btn');
         if (helpBtn) {
             helpBtn.addEventListener('click', () => this.showHelp());
         }
         
-        // Settings button
         const settingsBtn = document.getElementById('settings-btn');
         if (settingsBtn) {
             settingsBtn.addEventListener('click', () => this.showSettings());
         }
         
-        // Mark all notifications as read
         const markAllRead = document.getElementById('mark-all-read');
         if (markAllRead) {
             markAllRead.addEventListener('click', () => this.markAllNotificationsRead());
         }
         
-        // Close dropdowns when clicking outside
         document.addEventListener('click', (e) => {
             const dropdowns = document.querySelectorAll('[id$="-dropdown"]');
             dropdowns.forEach(dropdown => {
@@ -193,7 +187,6 @@ export class Header {
             });
         });
         
-        // Load notifications
         this.loadNotifications();
     }
     
@@ -213,44 +206,34 @@ export class Header {
     }
     
     toggleDropdown(dropdown) {
-        // Hide other dropdowns
         const allDropdowns = document.querySelectorAll('[id$="-dropdown"]');
         allDropdowns.forEach(d => {
             if (d !== dropdown) {
                 d.classList.add('hidden');
             }
         });
-        
-        // Toggle current dropdown
         dropdown.classList.toggle('hidden');
     }
     
     handleGlobalSearch(query) {
-        // Implement global search suggestions
         if (query.length > 2) {
-            // You could show search suggestions here
             console.log('Searching for:', query);
         }
     }
     
     performSearch(query) {
         if (query.trim()) {
-            // Navigate to search results page or show search modal
-            console.log('Performing search for:', query);
-            // For now, just show a notification
-            window.showNotification(`Searching for "${query}"...`, 'info');
+            window.showNotification(t('header.searchingFor', { query }), 'info');
         }
     }
     
     async loadNotifications() {
         try {
-            // In a real app, this would fetch from the API
-            // For now, we'll simulate some notifications
             this.notifications = [
                 {
                     id: 1,
                     type: 'appointment',
-                    title: 'Upcoming Appointment',
+                    title: t('header.notificationUpcoming'),
                     message: 'Oil change for John Smith at 2:00 PM',
                     time: '10 minutes ago',
                     read: false
@@ -258,7 +241,7 @@ export class Header {
                 {
                     id: 2,
                     type: 'inventory',
-                    title: 'Low Stock Alert',
+                    title: t('header.notificationLowStock'),
                     message: 'Brake pads are running low (2 remaining)',
                     time: '1 hour ago',
                     read: false
@@ -266,7 +249,7 @@ export class Header {
                 {
                     id: 3,
                     type: 'payment',
-                    title: 'Payment Received',
+                    title: t('header.notificationPayment'),
                     message: 'Invoice #INV-2024-015 has been paid',
                     time: '2 hours ago',
                     read: true
@@ -298,7 +281,7 @@ export class Header {
             if (this.notifications.length === 0) {
                 list.innerHTML = `
                     <div class="p-4 text-center text-gray-500">
-                        No new notifications
+                        ${t('header.noNotifications')}
                     </div>
                 `;
             } else {
@@ -339,31 +322,28 @@ export class Header {
             notification.read = true;
         });
         this.updateNotificationUI();
-        window.showNotification('All notifications marked as read', 'success');
+        window.showNotification(t('header.allNotificationsRead'), 'success');
     }
     
     addNotification(notification) {
         this.notifications.unshift({
             id: Date.now(),
             read: false,
-            time: 'Just now',
+            time: t('common.justNow'),
             ...notification
         });
         this.updateNotificationUI();
     }
     
     showHelp() {
-        // Show help modal or navigate to help page
-        window.showNotification('Help system coming soon!', 'info');
+        window.showNotification(t('header.helpComingSoon'), 'info');
     }
     
     showSettings() {
-        // Show settings modal or navigate to settings page
-        window.showNotification('Settings coming soon!', 'info');
+        window.showNotification(t('header.settingsComingSoon'), 'info');
     }
     
     destroy() {
-        // Clean up event listeners if needed
         document.removeEventListener('click', this.closeDropdowns);
     }
 }

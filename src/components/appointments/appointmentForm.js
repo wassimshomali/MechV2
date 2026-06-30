@@ -7,6 +7,31 @@ import appointmentService from '../../services/appointmentService.js';
 import clientService from '../../services/clientService.js';
 import vehicleService from '../../services/vehicleService.js';
 import serviceService from '../../services/serviceService.js';
+import { t } from '../../i18n/index.js';
+
+function getAppointmentFields(clientOptions, vehicleOptions, serviceOptions) {
+    return [
+        { name: 'clientId', label: t('fields.client'), type: 'select', required: true, options: clientOptions },
+        { name: 'vehicleId', label: t('fields.vehicle'), type: 'select', required: true, options: vehicleOptions },
+        { name: 'serviceId', label: t('fields.service'), type: 'select', required: true, options: serviceOptions },
+        { name: 'appointmentDate', label: t('fields.date'), type: 'date', required: true },
+        { name: 'appointmentTime', label: t('fields.time'), type: 'time', required: true },
+        { name: 'estimatedDuration', label: t('fields.duration'), type: 'number' },
+        { name: 'status', label: t('fields.status'), type: 'select', options: [
+            { value: 'scheduled', label: t('status.scheduled') },
+            { value: 'confirmed', label: t('status.confirmed') },
+            { value: 'in_progress', label: t('status.in_progress') },
+            { value: 'completed', label: t('status.completed') },
+        ]},
+        { name: 'priority', label: t('fields.priority'), type: 'select', options: [
+            { value: 'low', label: t('priority.low') },
+            { value: 'normal', label: t('priority.normal') },
+            { value: 'high', label: t('priority.high') },
+        ]},
+        { name: 'description', label: t('fields.description'), type: 'textarea' },
+        { name: 'customerNotes', label: t('fields.customerNotes'), type: 'textarea' },
+    ];
+}
 
 export class AppointmentForm {
     constructor(params = {}) {
@@ -18,7 +43,7 @@ export class AppointmentForm {
     async render() {
         return `
             <div class="max-w-3xl mx-auto space-y-6">
-                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? 'Edit' : 'New'} Appointment</h1>
+                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? t('appointments.editAppointment') : t('appointments.newAppointment')}</h1>
                 <div class="bg-white rounded-lg shadow p-6">
                     <div id="appointment-form-container"></div>
                 </div>
@@ -54,33 +79,11 @@ export class AppointmentForm {
             };
         }
 
-        const fields = [
-            { name: 'clientId', label: 'Client', type: 'select', required: true, options: clientOptions },
-            { name: 'vehicleId', label: 'Vehicle', type: 'select', required: true, options: vehicleOptions },
-            { name: 'serviceId', label: 'Service', type: 'select', required: true, options: serviceOptions },
-            { name: 'appointmentDate', label: 'Date', type: 'date', required: true },
-            { name: 'appointmentTime', label: 'Time', type: 'time', required: true },
-            { name: 'estimatedDuration', label: 'Duration (min)', type: 'number' },
-            { name: 'status', label: 'Status', type: 'select', options: [
-                { value: 'scheduled', label: 'Scheduled' },
-                { value: 'confirmed', label: 'Confirmed' },
-                { value: 'in_progress', label: 'In Progress' },
-                { value: 'completed', label: 'Completed' },
-            ]},
-            { name: 'priority', label: 'Priority', type: 'select', options: [
-                { value: 'low', label: 'Low' },
-                { value: 'normal', label: 'Normal' },
-                { value: 'high', label: 'High' },
-            ]},
-            { name: 'description', label: 'Description', type: 'textarea' },
-            { name: 'customerNotes', label: 'Customer Notes', type: 'textarea' },
-        ];
-
         this.form = new Form({
             containerId: 'appointment-form-container',
-            fields,
+            fields: getAppointmentFields(clientOptions, vehicleOptions, serviceOptions),
             data,
-            submitText: this.isEdit ? 'Update Appointment' : 'Create Appointment',
+            submitText: this.isEdit ? t('appointments.updateAppointment') : t('appointments.createAppointment'),
             onSubmit: async (formData) => {
                 const payload = {
                     ...formData,

@@ -4,6 +4,18 @@
 
 import { Form } from '../common/form.js';
 import serviceService from '../../services/serviceService.js';
+import { t } from '../../i18n/index.js';
+
+function getServiceFields(categoryOptions) {
+    return [
+        { name: 'name', label: t('fields.serviceName'), type: 'text', required: true },
+        { name: 'categoryId', label: t('fields.category'), type: 'select', options: categoryOptions },
+        { name: 'description', label: t('fields.description'), type: 'textarea' },
+        { name: 'estimatedDuration', label: t('fields.estimatedDuration'), type: 'number' },
+        { name: 'laborRate', label: t('fields.laborRate'), type: 'number' },
+        { name: 'partsMarkup', label: t('fields.partsMarkup'), type: 'number' },
+    ];
+}
 
 export class ServiceForm {
     constructor(params = {}) {
@@ -14,7 +26,7 @@ export class ServiceForm {
     async render() {
         return `
             <div class="max-w-3xl mx-auto space-y-6">
-                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? 'Edit' : 'Add'} Service</h1>
+                <h1 class="text-2xl font-semibold text-gray-900">${this.isEdit ? t('services.editService') : t('services.addServiceTitle')}</h1>
                 <div class="bg-white rounded-lg shadow p-6">
                     <div id="service-form-container"></div>
                 </div>
@@ -37,20 +49,13 @@ export class ServiceForm {
             };
         }
 
-        const fields = [
-            { name: 'name', label: 'Service Name', type: 'text', required: true },
-            { name: 'categoryId', label: 'Category', type: 'select', options: categories.map(c => ({ value: c.id, label: c.name })) },
-            { name: 'description', label: 'Description', type: 'textarea' },
-            { name: 'estimatedDuration', label: 'Duration (minutes)', type: 'number' },
-            { name: 'laborRate', label: 'Labor Rate ($/hr)', type: 'number' },
-            { name: 'partsMarkup', label: 'Parts Markup (decimal)', type: 'number' },
-        ];
+        const categoryOptions = categories.map(c => ({ value: c.id, label: c.name }));
 
         const form = new Form({
             containerId: 'service-form-container',
-            fields,
+            fields: getServiceFields(categoryOptions),
             data,
-            submitText: this.isEdit ? 'Update Service' : 'Create Service',
+            submitText: this.isEdit ? t('services.updateService') : t('services.createService'),
             onSubmit: async (formData) => {
                 const payload = {
                     ...formData,

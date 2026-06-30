@@ -3,6 +3,8 @@
  * Handles navigation and sidebar functionality
  */
 
+import { t } from '../../i18n/index.js';
+
 export class Sidebar {
     constructor() {
         this.isCollapsed = false;
@@ -29,7 +31,7 @@ export class Sidebar {
                             <input 
                                 type="text" 
                                 id="sidebar-search"
-                                placeholder="Search..." 
+                                placeholder="${t('common.search')}..." 
                                 class="w-full bg-blue-700 text-white placeholder-blue-300 rounded-md py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                             <i data-feather="search" class="absolute left-3 top-2.5 text-blue-300"></i>
@@ -39,109 +41,109 @@ export class Sidebar {
                     <nav>
                         <!-- Dashboard Section -->
                         <div class="px-4 mb-2">
-                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Dashboard</div>
+                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">${t('nav.dashboard')}</div>
                             <a href="#/" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="dashboard" data-item="overview">
                                 <i data-feather="home" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Overview</span>
+                                <span class="sidebar-text">${t('nav.overview')}</span>
                             </a>
                         </div>
                         
                         <!-- Clients Section -->
                         <div class="px-4 mb-2">
-                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Clients</div>
+                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">${t('nav.clients')}</div>
                             <a href="#/clients" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="clients" data-item="list">
                                 <i data-feather="users" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Client List</span>
+                                <span class="sidebar-text">${t('nav.clientList')}</span>
                             </a>
                             <a href="#/clients/new" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="clients" data-item="new">
                                 <i data-feather="user-plus" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Add Client</span>
+                                <span class="sidebar-text">${t('nav.addClient')}</span>
                             </a>
                         </div>
                         
                         <!-- Vehicles Section -->
                         <div class="px-4 mb-2">
-                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Vehicles</div>
+                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">${t('nav.vehicles')}</div>
                             <a href="#/vehicles" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="vehicles" data-item="list">
                                 <i data-feather="car" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Vehicle List</span>
+                                <span class="sidebar-text">${t('nav.vehicleList')}</span>
                             </a>
                             <a href="#/vehicles/new" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="vehicles" data-item="new">
                                 <i data-feather="plus-circle" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Add Vehicle</span>
+                                <span class="sidebar-text">${t('nav.addVehicle')}</span>
                             </a>
                         </div>
                         
                         <!-- Appointments Section -->
                         <div class="px-4 mb-2">
-                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Appointments</div>
+                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">${t('nav.appointments')}</div>
                             <a href="#/appointments" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="appointments" data-item="list">
                                 <i data-feather="calendar" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Schedule</span>
+                                <span class="sidebar-text">${t('nav.schedule')}</span>
                             </a>
                             <a href="#/appointments/calendar" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="appointments" data-item="calendar">
                                 <i data-feather="grid" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Calendar View</span>
+                                <span class="sidebar-text">${t('nav.calendarView')}</span>
                             </a>
                             <a href="#/appointments/today" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="appointments" data-item="today">
                                 <i data-feather="clock" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Today's Jobs</span>
+                                <span class="sidebar-text">${t('nav.todaysJobs')}</span>
                             </a>
                         </div>
                         
                         <!-- Work Orders Section -->
                         <div class="px-4 mb-2">
-                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Work Orders</div>
+                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">${t('nav.workOrders')}</div>
                             <a href="#/work-orders" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="work-orders" data-item="list">
                                 <i data-feather="clipboard" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">All Orders</span>
+                                <span class="sidebar-text">${t('nav.allOrders')}</span>
                             </a>
                             <a href="#/work-orders/new" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="work-orders" data-item="new">
                                 <i data-feather="plus-square" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">New Order</span>
+                                <span class="sidebar-text">${t('nav.newOrder')}</span>
                             </a>
                         </div>
                         
                         <!-- Inventory Section -->
                         <div class="px-4 mb-2">
-                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Inventory</div>
+                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">${t('nav.inventory')}</div>
                             <a href="#/inventory" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="inventory" data-item="list">
                                 <i data-feather="package" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Parts & Supplies</span>
+                                <span class="sidebar-text">${t('nav.partsSupplies')}</span>
                             </a>
                             <a href="#/inventory/low-stock" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="inventory" data-item="low-stock">
                                 <i data-feather="alert-circle" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Low Stock</span>
+                                <span class="sidebar-text">${t('nav.lowStock')}</span>
                             </a>
                             <a href="#/inventory/new" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="inventory" data-item="new">
                                 <i data-feather="plus" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Add Item</span>
+                                <span class="sidebar-text">${t('nav.addItem')}</span>
                             </a>
                         </div>
                         
                         <!-- Financial Section -->
                         <div class="px-4 mb-2">
-                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Financial</div>
+                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">${t('nav.financial')}</div>
                             <a href="#/financial/invoices" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="financial" data-item="invoices">
                                 <i data-feather="dollar-sign" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Invoices</span>
+                                <span class="sidebar-text">${t('nav.invoices')}</span>
                             </a>
                             <a href="#/financial/payments" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="financial" data-item="payments">
                                 <i data-feather="credit-card" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Payments</span>
+                                <span class="sidebar-text">${t('nav.payments')}</span>
                             </a>
                             <a href="#/financial/reports" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="financial" data-item="reports">
                                 <i data-feather="bar-chart-2" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Reports</span>
+                                <span class="sidebar-text">${t('nav.reports')}</span>
                             </a>
                         </div>
                         
                         <!-- Services Section -->
                         <div class="px-4 mb-2">
-                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">Services</div>
+                            <div class="text-xs uppercase font-semibold text-blue-300 tracking-wider mb-2">${t('nav.services')}</div>
                             <a href="#/services" class="nav-item flex items-center px-3 py-2 text-sm rounded-md hover:bg-blue-700 text-white" data-section="services" data-item="list">
                                 <i data-feather="settings" class="w-4 h-4 mr-3"></i>
-                                <span class="sidebar-text">Service Templates</span>
+                                <span class="sidebar-text">${t('nav.serviceTemplates')}</span>
                             </a>
                         </div>
                     </nav>
@@ -153,8 +155,8 @@ export class Sidebar {
                             <i data-feather="user" class="w-6 h-6 text-white"></i>
                         </div>
                         <div class="ml-3 sidebar-text">
-                            <div class="text-sm font-medium">Mechanic</div>
-                            <div class="text-xs text-blue-300">Owner</div>
+                            <div class="text-sm font-medium">${t('nav.mechanic')}</div>
+                            <div class="text-xs text-blue-300">${t('nav.owner')}</div>
                         </div>
                     </div>
                 </div>

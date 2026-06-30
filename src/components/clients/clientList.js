@@ -7,6 +7,7 @@ import { DataTable } from '../common/table.js';
 import { Modal } from '../common/modal.js';
 import clientService from '../../services/clientService.js';
 import { formatDate, formatPhone } from '../../utils/formatters.js';
+import { t } from '../../i18n/index.js';
 
 export class ClientList {
     constructor(params = {}) {
@@ -23,15 +24,15 @@ export class ClientList {
                 <!-- Header -->
                 <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-2xl font-semibold text-gray-900">Clients</h1>
-                        <p class="mt-1 text-sm text-gray-500">Manage your customer database</p>
+                        <h1 class="text-2xl font-semibold text-gray-900">${t('clients.title')}</h1>
+                        <p class="mt-1 text-sm text-gray-500">${t('clients.subtitle')}</p>
                     </div>
                     <button 
                         onclick="window.location.hash = '/clients/new'"
                         class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                         <i data-feather="plus" class="w-4 h-4 mr-2 inline"></i>
-                        Add Client
+                        ${t('clients.addClient')}
                     </button>
                 </div>
                 
@@ -39,27 +40,27 @@ export class ClientList {
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">${t('clients.status')}</label>
                             <select id="status-filter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="all">All Clients</option>
-                                <option value="true" selected>Active</option>
-                                <option value="false">Inactive</option>
+                                <option value="all">${t('clients.allClients')}</option>
+                                <option value="true" selected>${t('common.active')}</option>
+                                <option value="false">${t('common.inactive')}</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">${t('clients.sortBy')}</label>
                             <select id="sort-filter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="last_name">Last Name</option>
-                                <option value="first_name">First Name</option>
-                                <option value="created_at">Date Added</option>
-                                <option value="email">Email</option>
+                                <option value="last_name">${t('clients.lastName')}</option>
+                                <option value="first_name">${t('clients.firstName')}</option>
+                                <option value="created_at">${t('clients.dateAdded')}</option>
+                                <option value="email">${t('fields.email')}</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">${t('clients.order')}</label>
                             <select id="order-filter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="ASC">Ascending</option>
-                                <option value="DESC">Descending</option>
+                                <option value="ASC">${t('common.ascending')}</option>
+                                <option value="DESC">${t('common.descending')}</option>
                             </select>
                         </div>
                         <div class="flex items-end">
@@ -68,7 +69,7 @@ export class ClientList {
                                 type="button" 
                                 class="w-full px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                             >
-                                Reset Filters
+                                ${t('common.resetFilters')}
                             </button>
                         </div>
                     </div>
@@ -87,7 +88,7 @@ export class ClientList {
             columns: [
                 {
                     key: 'first_name',
-                    label: 'Name',
+                    label: t('clients.name'),
                     formatter: (value, row) => `
                         <div class="flex items-center">
                             <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -97,19 +98,19 @@ export class ClientList {
                             </div>
                             <div class="ml-4">
                                 <div class="text-sm font-medium text-gray-900">${row.first_name} ${row.last_name}</div>
-                                <div class="text-sm text-gray-500">${row.email || 'No email'}</div>
+                                <div class="text-sm text-gray-500">${row.email || t('common.noEmail')}</div>
                             </div>
                         </div>
                     `
                 },
                 {
                     key: 'phone',
-                    label: 'Phone',
+                    label: t('clients.phone'),
                     formatter: (value) => formatPhone(value) || '-'
                 },
                 {
                     key: 'address',
-                    label: 'Location',
+                    label: t('clients.location'),
                     formatter: (value, row) => {
                         const parts = [];
                         if (row.city) parts.push(row.city);
@@ -119,7 +120,7 @@ export class ClientList {
                 },
                 {
                     key: 'vehicleCount',
-                    label: 'Vehicles',
+                    label: t('clients.vehicles'),
                     formatter: (value) => `
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             ${value || 0}
@@ -128,31 +129,31 @@ export class ClientList {
                 },
                 {
                     key: 'created_at',
-                    label: 'Added',
+                    label: t('clients.added'),
                     formatter: (value) => formatDate(value, 'relative')
                 },
                 {
                     key: 'actions',
-                    label: 'Actions',
+                    label: t('common.actions'),
                     actions: [
                         {
                             name: 'view',
                             icon: 'eye',
-                            label: 'View',
+                            label: t('common.view'),
                             color: 'blue',
                             handler: (row) => window.location.hash = `/clients/${row.id}`
                         },
                         {
                             name: 'edit',
                             icon: 'edit',
-                            label: 'Edit',
+                            label: t('common.edit'),
                             color: 'green',
                             handler: (row) => window.location.hash = `/clients/${row.id}/edit`
                         },
                         {
                             name: 'delete',
                             icon: 'trash-2',
-                            label: 'Delete',
+                            label: t('common.delete'),
                             color: 'red',
                             handler: (row) => this.confirmDelete(row)
                         }
@@ -166,7 +167,7 @@ export class ClientList {
             onPageChange: (page) => this.handlePageChange(page),
             onSearch: (query) => this.handleSearch(query),
             onRowClick: (row) => window.location.hash = `/clients/${row.id}`,
-            emptyMessage: 'No clients found. Add your first client to get started.'
+            emptyMessage: t('clients.empty')
         });
         
         // Attach filter event listeners
@@ -210,7 +211,7 @@ export class ClientList {
             
         } catch (error) {
             console.error('Error loading clients:', error);
-            window.showNotification('Error loading clients. Please try again.', 'error');
+            window.showNotification(t('clients.errorLoading'), 'error');
             this.table.setLoading(false);
         }
     }
@@ -268,16 +269,16 @@ export class ClientList {
     
     confirmDelete(client) {
         Modal.confirm(
-            'Delete Client',
-            `Are you sure you want to delete ${client.first_name} ${client.last_name}? This action cannot be undone.`,
+            t('clients.deleteTitle'),
+            t('clients.deleteMessage', { name: `${client.first_name} ${client.last_name}` }),
             async () => {
                 try {
                     await clientService.deleteClient(client.id);
-                    window.showNotification('Client deleted successfully', 'success');
+                    window.showNotification(t('clients.deleted'), 'success');
                     this.loadClients();
                 } catch (error) {
                     console.error('Error deleting client:', error);
-                    window.showNotification('Error deleting client. Please try again.', 'error');
+                    window.showNotification(t('clients.errorDeleting'), 'error');
                 }
             }
         );

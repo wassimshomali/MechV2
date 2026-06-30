@@ -6,6 +6,7 @@
 import validator from '../../utils/validation.js';
 import { debounce } from '../../utils/helpers.js';
 import { Modal } from './modal.js';
+import { t } from '../../i18n/index.js';
 
 export class Form {
     constructor(options = {}) {
@@ -15,8 +16,8 @@ export class Form {
         this.schema = options.schema || {};
         this.onSubmit = options.onSubmit || null;
         this.onChange = options.onChange || null;
-        this.submitText = options.submitText || 'Save';
-        this.cancelText = options.cancelText || 'Cancel';
+        this.submitText = options.submitText || t('common.save');
+        this.cancelText = options.cancelText || t('common.cancel');
         this.showCancel = options.showCancel !== false;
         this.autoSave = options.autoSave || false;
         this.autoSaveDelay = options.autoSaveDelay || 2000;
@@ -356,11 +357,11 @@ export class Form {
                 await this.onSubmit(formData);
             }
             
-            window.showNotification('Form submitted successfully!', 'success');
+            window.showNotification(t('form.submitted'), 'success');
             
         } catch (error) {
             console.error('Form submission error:', error);
-            window.showNotification('Error submitting form. Please try again.', 'error');
+            window.showNotification(t('form.submitError'), 'error');
             
             // Handle server validation errors
             if (error.data && error.data.errors) {
@@ -377,8 +378,8 @@ export class Form {
     handleCancel() {
         if (this.hasUnsavedChanges()) {
             Modal.confirm(
-                'Unsaved Changes',
-                'You have unsaved changes. Are you sure you want to cancel?',
+                t('form.unsavedTitle'),
+                t('form.unsavedMessage'),
                 () => {
                     this.reset();
                     window.history.back();

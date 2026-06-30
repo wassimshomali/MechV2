@@ -4,6 +4,7 @@
  */
 
 import apiService from '../../services/api.js';
+import { t, tStatus } from '../../i18n/index.js';
 
 export class Dashboard {
     constructor() {
@@ -29,9 +30,9 @@ export class Dashboard {
                         <div class="bg-white rounded-lg shadow overflow-hidden">
                             <div class="p-6 border-b border-gray-200">
                                 <div class="flex items-center justify-between">
-                                    <h2 class="text-lg font-semibold text-gray-900">Appointments</h2>
+                                    <h2 class="text-lg font-semibold text-gray-900">${t('dashboard.appointments')}</h2>
                                     <button onclick="window.location.hash = '/appointments/new'" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                        <i data-feather="plus" class="w-4 h-4 mr-1 inline"></i> New Appointment
+                                        <i data-feather="plus" class="w-4 h-4 mr-1 inline"></i> ${t('dashboard.newAppointment')}
                                     </button>
                                 </div>
                             </div>
@@ -43,7 +44,7 @@ export class Dashboard {
                         <!-- Recent Activity -->
                         <div class="bg-white rounded-lg shadow overflow-hidden">
                             <div class="p-6 border-b border-gray-200">
-                                <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
+                                <h2 class="text-lg font-semibold text-gray-900">${t('dashboard.recentActivity')}</h2>
                             </div>
                             <div id="recent-activity" class="divide-y divide-gray-200">
                                 ${this.renderActivityLoading()}
@@ -56,32 +57,32 @@ export class Dashboard {
                         <!-- Quick Actions -->
                         <div class="bg-white rounded-lg shadow overflow-hidden">
                             <div class="p-6 border-b border-gray-200">
-                                <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
+                                <h2 class="text-lg font-semibold text-gray-900">${t('dashboard.quickActions')}</h2>
                             </div>
                             <div class="p-6 grid grid-cols-2 gap-4">
                                 <button onclick="window.location.hash = '/clients/new'" class="p-4 bg-blue-50 rounded-lg flex flex-col items-center justify-center text-blue-600 hover:bg-blue-100 transition">
                                     <i data-feather="user-plus" class="w-6 h-6 mb-2"></i>
-                                    <span class="text-sm font-medium">Add Client</span>
+                                    <span class="text-sm font-medium">${t('dashboard.addClient')}</span>
                                 </button>
                                 <button onclick="window.location.hash = '/vehicles/new'" class="p-4 bg-green-50 rounded-lg flex flex-col items-center justify-center text-green-600 hover:bg-green-100 transition">
                                     <i data-feather="car" class="w-6 h-6 mb-2"></i>
-                                    <span class="text-sm font-medium">Add Vehicle</span>
+                                    <span class="text-sm font-medium">${t('dashboard.addVehicle')}</span>
                                 </button>
                                 <button onclick="window.location.hash = '/appointments/new'" class="p-4 bg-purple-50 rounded-lg flex flex-col items-center justify-center text-purple-600 hover:bg-purple-100 transition">
                                     <i data-feather="calendar" class="w-6 h-6 mb-2"></i>
-                                    <span class="text-sm font-medium">New Appointment</span>
+                                    <span class="text-sm font-medium">${t('dashboard.newAppointment')}</span>
                                 </button>
                                 <button onclick="window.location.hash = '/financial/invoices/new'" class="p-4 bg-yellow-50 rounded-lg flex flex-col items-center justify-center text-yellow-600 hover:bg-yellow-100 transition">
                                     <i data-feather="file-text" class="w-6 h-6 mb-2"></i>
-                                    <span class="text-sm font-medium">Create Invoice</span>
+                                    <span class="text-sm font-medium">${t('dashboard.createInvoice')}</span>
                                 </button>
                                 <button onclick="window.location.hash = '/inventory/new'" class="p-4 bg-red-50 rounded-lg flex flex-col items-center justify-center text-red-600 hover:bg-red-100 transition">
                                     <i data-feather="package" class="w-6 h-6 mb-2"></i>
-                                    <span class="text-sm font-medium">Add Inventory</span>
+                                    <span class="text-sm font-medium">${t('dashboard.addInventory')}</span>
                                 </button>
                                 <button onclick="window.location.hash = '/work-orders/new'" class="p-4 bg-indigo-50 rounded-lg flex flex-col items-center justify-center text-indigo-600 hover:bg-indigo-100 transition">
                                     <i data-feather="clipboard" class="w-6 h-6 mb-2"></i>
-                                    <span class="text-sm font-medium">New Work Order</span>
+                                    <span class="text-sm font-medium">${t('dashboard.newWorkOrder')}</span>
                                 </button>
                             </div>
                         </div>
@@ -90,8 +91,8 @@ export class Dashboard {
                         <div class="bg-white rounded-lg shadow overflow-hidden">
                             <div class="p-6 border-b border-gray-200">
                                 <div class="flex items-center justify-between">
-                                    <h2 class="text-lg font-semibold text-gray-900">Upcoming</h2>
-                                    <a href="#/appointments" class="text-sm font-medium text-blue-600 hover:text-blue-500">View all</a>
+                                    <h2 class="text-lg font-semibold text-gray-900">${t('dashboard.upcoming')}</h2>
+                                    <a href="#/appointments" class="text-sm font-medium text-blue-600 hover:text-blue-500">${t('common.viewAll')}</a>
                                 </div>
                             </div>
                             <div id="upcoming-appointments">
@@ -103,8 +104,8 @@ export class Dashboard {
                         <div class="bg-white rounded-lg shadow overflow-hidden">
                             <div class="p-6 border-b border-gray-200">
                                 <div class="flex items-center justify-between">
-                                    <h2 class="text-lg font-semibold text-gray-900">Low Inventory</h2>
-                                    <a href="#/inventory/low-stock" class="text-sm font-medium text-blue-600 hover:text-blue-500">View all</a>
+                                    <h2 class="text-lg font-semibold text-gray-900">${t('dashboard.lowInventory')}</h2>
+                                    <a href="#/inventory/low-stock" class="text-sm font-medium text-blue-600 hover:text-blue-500">${t('common.viewAll')}</a>
                                 </div>
                             </div>
                             <div id="low-inventory">
@@ -130,7 +131,7 @@ export class Dashboard {
             
         } catch (error) {
             console.error('Error initializing dashboard:', error);
-            window.showNotification('Error loading dashboard data', 'error');
+            window.showNotification(t('dashboard.errorLoading'), 'error');
         }
     }
     
@@ -197,7 +198,7 @@ export class Dashboard {
             <div class="dashboard-card bg-white rounded-lg shadow p-6 transition duration-300 ease-in-out">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Today's Appointments</p>
+                        <p class="text-sm font-medium text-gray-500">${t('dashboard.todaysAppointments')}</p>
                         <p class="text-3xl font-semibold text-gray-900">${this.stats.todayAppointments || 0}</p>
                     </div>
                     <div class="p-3 rounded-full bg-blue-100 text-blue-600">
@@ -207,7 +208,7 @@ export class Dashboard {
                 <div class="mt-4">
                     <div class="flex items-center text-sm text-gray-500">
                         <i data-feather="clock" class="w-4 h-4 mr-1"></i>
-                        <span>${this.stats.nextAppointment ? `Next: ${this.stats.nextAppointment.time} - ${this.stats.nextAppointment.service}` : 'No upcoming appointments'}</span>
+                        <span>${this.stats.nextAppointment ? t('dashboard.nextAppointment', { time: this.stats.nextAppointment.time, service: this.stats.nextAppointment.service }) : t('dashboard.noUpcomingAppointments')}</span>
                     </div>
                 </div>
             </div>
@@ -215,7 +216,7 @@ export class Dashboard {
             <div class="dashboard-card bg-white rounded-lg shadow p-6 transition duration-300 ease-in-out">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Monthly Revenue</p>
+                        <p class="text-sm font-medium text-gray-500">${t('dashboard.monthlyRevenue')}</p>
                         <p class="text-3xl font-semibold text-gray-900">$${(this.stats.monthlyRevenue || 0).toLocaleString()}</p>
                     </div>
                     <div class="p-3 rounded-full bg-green-100 text-green-600">
@@ -225,7 +226,7 @@ export class Dashboard {
                 <div class="mt-4">
                     <div class="flex items-center text-sm text-gray-500">
                         <i data-feather="${this.stats.revenueGrowth >= 0 ? 'trending-up' : 'trending-down'}" class="w-4 h-4 mr-1"></i>
-                        <span>${Math.abs(this.stats.revenueGrowth || 0)}% from last month</span>
+                        <span>${t('dashboard.revenueGrowth', { percent: Math.abs(this.stats.revenueGrowth || 0) })}</span>
                     </div>
                 </div>
             </div>
@@ -233,7 +234,7 @@ export class Dashboard {
             <div class="dashboard-card bg-white rounded-lg shadow p-6 transition duration-300 ease-in-out">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Active Clients</p>
+                        <p class="text-sm font-medium text-gray-500">${t('dashboard.activeClients')}</p>
                         <p class="text-3xl font-semibold text-gray-900">${this.stats.activeClients || 0}</p>
                     </div>
                     <div class="p-3 rounded-full bg-purple-100 text-purple-600">
@@ -243,7 +244,7 @@ export class Dashboard {
                 <div class="mt-4">
                     <div class="flex items-center text-sm text-gray-500">
                         <i data-feather="user-plus" class="w-4 h-4 mr-1"></i>
-                        <span>Growing steadily</span>
+                        <span>${t('dashboard.growingSteadily')}</span>
                     </div>
                 </div>
             </div>
@@ -251,7 +252,7 @@ export class Dashboard {
             <div class="dashboard-card bg-white rounded-lg shadow p-6 transition duration-300 ease-in-out">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Low Inventory Items</p>
+                        <p class="text-sm font-medium text-gray-500">${t('dashboard.lowInventoryItems')}</p>
                         <p class="text-3xl font-semibold text-gray-900">${this.stats.lowInventoryItems || 0}</p>
                     </div>
                     <div class="p-3 rounded-full bg-red-100 text-red-600">
@@ -261,7 +262,7 @@ export class Dashboard {
                 <div class="mt-4">
                     <div class="flex items-center text-sm text-gray-500">
                         <i data-feather="package" class="w-4 h-4 mr-1"></i>
-                        <span>Reorder soon</span>
+                        <span>${t('dashboard.reorderSoon')}</span>
                     </div>
                 </div>
             </div>
@@ -290,7 +291,7 @@ export class Dashboard {
             container.innerHTML = `
                 <div class="col-span-4 bg-red-50 border border-red-200 rounded-lg p-4 text-center">
                     <i data-feather="alert-circle" class="w-8 h-8 text-red-500 mx-auto mb-2"></i>
-                    <p class="text-red-700">Error loading statistics</p>
+                    <p class="text-red-700">${t('dashboard.errorStats')}</p>
                 </div>
             `;
             replaceFeatherIcons();
@@ -305,7 +306,7 @@ export class Dashboard {
             container.innerHTML = `
                 <div class="p-8 text-center text-gray-500">
                     <i data-feather="activity" class="w-12 h-12 mx-auto mb-4 text-gray-300"></i>
-                    <p>No recent activity</p>
+                    <p>${t('dashboard.noRecentActivity')}</p>
                 </div>
             `;
             replaceFeatherIcons();
@@ -324,7 +325,7 @@ export class Dashboard {
                     </div>
                     <p class="text-sm text-gray-500">${activity.vehicle} - ${activity.service_name}</p>
                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${this.getStatusClass(activity.status)}">
-                        ${activity.status}
+                        ${tStatus(activity.status)}
                     </span>
                 </div>
             </div>
@@ -353,7 +354,7 @@ export class Dashboard {
             container.innerHTML = `
                 <div class="p-4 text-center text-red-500">
                     <i data-feather="alert-circle" class="w-8 h-8 mx-auto mb-2"></i>
-                    <p>Error loading recent activity</p>
+                    <p>${t('dashboard.errorActivity')}</p>
                 </div>
             `;
             replaceFeatherIcons();
@@ -367,20 +368,20 @@ export class Dashboard {
         // Simple calendar view - in a real app this would be more sophisticated
         container.innerHTML = `
             <div class="text-center">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">This Month's Overview</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">${t('dashboard.monthOverview')}</h3>
                 <div class="grid grid-cols-7 gap-2 mb-4">
-                    <div class="text-center font-medium text-gray-500 text-sm">Sun</div>
-                    <div class="text-center font-medium text-gray-500 text-sm">Mon</div>
-                    <div class="text-center font-medium text-gray-500 text-sm">Tue</div>
-                    <div class="text-center font-medium text-gray-500 text-sm">Wed</div>
-                    <div class="text-center font-medium text-gray-500 text-sm">Thu</div>
-                    <div class="text-center font-medium text-gray-500 text-sm">Fri</div>
-                    <div class="text-center font-medium text-gray-500 text-sm">Sat</div>
+                    <div class="text-center font-medium text-gray-500 text-sm">${t('days.sun')}</div>
+                    <div class="text-center font-medium text-gray-500 text-sm">${t('days.mon')}</div>
+                    <div class="text-center font-medium text-gray-500 text-sm">${t('days.tue')}</div>
+                    <div class="text-center font-medium text-gray-500 text-sm">${t('days.wed')}</div>
+                    <div class="text-center font-medium text-gray-500 text-sm">${t('days.thu')}</div>
+                    <div class="text-center font-medium text-gray-500 text-sm">${t('days.fri')}</div>
+                    <div class="text-center font-medium text-gray-500 text-sm">${t('days.sat')}</div>
                 </div>
                 <div class="text-sm text-gray-600">
-                    <p>Total Appointments: ${data?.appointments?.length || 0}</p>
+                    <p>${t('dashboard.totalAppointments', { count: data?.appointments?.length || 0 })}</p>
                     <a href="#/appointments/calendar" class="text-blue-600 hover:text-blue-500 font-medium mt-2 inline-block">
-                        View Full Calendar
+                        ${t('dashboard.viewFullCalendar')}
                     </a>
                 </div>
             </div>
@@ -405,7 +406,7 @@ export class Dashboard {
             container.innerHTML = `
                 <div class="text-center text-red-500">
                     <i data-feather="calendar-x" class="w-8 h-8 mx-auto mb-2"></i>
-                    <p>Error loading calendar</p>
+                    <p>${t('dashboard.errorCalendar')}</p>
                 </div>
             `;
             replaceFeatherIcons();
@@ -420,7 +421,7 @@ export class Dashboard {
             container.innerHTML = `
                 <div class="p-8 text-center text-gray-500">
                     <i data-feather="calendar" class="w-12 h-12 mx-auto mb-4 text-gray-300"></i>
-                    <p>No upcoming appointments</p>
+                    <p>${t('dashboard.noUpcomingAppointments')}</p>
                 </div>
             `;
             replaceFeatherIcons();
@@ -435,7 +436,7 @@ export class Dashboard {
                             <div class="flex-1">
                                 <h4 class="text-sm font-medium text-gray-900">${appointment.client_name}</h4>
                                 <p class="text-sm text-gray-500">${appointment.vehicle}</p>
-                                <p class="text-xs text-gray-400">${appointment.service_name || 'General Service'}</p>
+                                <p class="text-xs text-gray-400">${appointment.service_name || t('common.generalService')}</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-sm font-medium text-gray-900">${this.formatTime(appointment.appointment_time)}</p>
@@ -476,7 +477,7 @@ export class Dashboard {
             container.innerHTML = `
                 <div class="p-4 text-center text-red-500">
                     <i data-feather="alert-circle" class="w-8 h-8 mx-auto mb-2"></i>
-                    <p>Error loading appointments</p>
+                    <p>${t('dashboard.errorAppointments')}</p>
                 </div>
             `;
             replaceFeatherIcons();
@@ -491,7 +492,7 @@ export class Dashboard {
             container.innerHTML = `
                 <div class="p-8 text-center text-gray-500">
                     <i data-feather="package" class="w-12 h-12 mx-auto mb-4 text-gray-300"></i>
-                    <p>All inventory levels good</p>
+                    <p>${t('dashboard.allInventoryGood')}</p>
                 </div>
             `;
             replaceFeatherIcons();
@@ -508,9 +509,9 @@ export class Dashboard {
                         <div class="ml-4 flex-1">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-sm font-medium text-gray-900">${item.name}</h3>
-                                <span class="text-xs font-semibold ${this.getStockColor(item)}">${item.quantity_on_hand} left</span>
+                                <span class="text-xs font-semibold ${this.getStockColor(item)}">${t('dashboard.itemsLeft', { count: item.quantity_on_hand })}</span>
                             </div>
-                            <p class="text-sm text-gray-500">${item.part_number || 'No part number'}</p>
+                            <p class="text-sm text-gray-500">${item.part_number || t('common.noPartNumber')}</p>
                         </div>
                     </div>
                 `).join('')}
@@ -545,7 +546,7 @@ export class Dashboard {
             container.innerHTML = `
                 <div class="p-4 text-center text-red-500">
                     <i data-feather="alert-circle" class="w-8 h-8 mx-auto mb-2"></i>
-                    <p>Error loading inventory</p>
+                    <p>${t('dashboard.errorInventory')}</p>
                 </div>
             `;
             replaceFeatherIcons();

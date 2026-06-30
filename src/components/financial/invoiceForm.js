@@ -5,6 +5,18 @@
 import { Form } from '../common/form.js';
 import financialService from '../../services/financialService.js';
 import clientService from '../../services/clientService.js';
+import { t } from '../../i18n/index.js';
+
+function getInvoiceFields(clientOptions) {
+    return [
+        { name: 'clientId', label: t('fields.client'), type: 'select', required: true, options: clientOptions },
+        { name: 'invoiceDate', label: t('fields.invoiceDate'), type: 'date', required: true },
+        { name: 'dueDate', label: t('fields.dueDate'), type: 'date', required: true },
+        { name: 'subtotal', label: t('fields.subtotal'), type: 'number', required: true },
+        { name: 'taxRate', label: t('fields.taxRate'), type: 'number' },
+        { name: 'notes', label: t('fields.notes'), type: 'textarea' },
+    ];
+}
 
 export class InvoiceForm {
     constructor(params = {}) {
@@ -15,7 +27,7 @@ export class InvoiceForm {
     async render() {
         return `
             <div class="max-w-3xl mx-auto space-y-6">
-                <h1 class="text-2xl font-semibold text-gray-900">Create Invoice</h1>
+                <h1 class="text-2xl font-semibold text-gray-900">${t('financial.createInvoiceTitle')}</h1>
                 <div class="bg-white rounded-lg shadow p-6">
                     <div id="invoice-form-container"></div>
                 </div>
@@ -29,20 +41,11 @@ export class InvoiceForm {
         const today = new Date().toISOString().split('T')[0];
         const due = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
 
-        const fields = [
-            { name: 'clientId', label: 'Client', type: 'select', required: true, options: clientOptions },
-            { name: 'invoiceDate', label: 'Invoice Date', type: 'date', required: true },
-            { name: 'dueDate', label: 'Due Date', type: 'date', required: true },
-            { name: 'subtotal', label: 'Subtotal', type: 'number', required: true },
-            { name: 'taxRate', label: 'Tax Rate (decimal)', type: 'number' },
-            { name: 'notes', label: 'Notes', type: 'textarea' },
-        ];
-
         const form = new Form({
             containerId: 'invoice-form-container',
-            fields,
+            fields: getInvoiceFields(clientOptions),
             data: { invoiceDate: today, dueDate: due, taxRate: 0.0825, subtotal: 0 },
-            submitText: 'Create Invoice',
+            submitText: t('financial.createInvoice'),
             onSubmit: async (formData) => {
                 const subtotal = Number(formData.subtotal);
                 const taxRate = Number(formData.taxRate || 0);

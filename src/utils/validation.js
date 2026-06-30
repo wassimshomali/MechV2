@@ -3,6 +3,25 @@
  * Client-side form validation functions
  */
 
+import { t } from '../i18n/index.js';
+
+const VALIDATION_MESSAGE_KEYS = {
+    required: 'validation.required',
+    email: 'validation.email',
+    phone: 'validation.phone',
+    minLength: 'validation.tooShort',
+    maxLength: 'validation.tooLong',
+    numeric: 'validation.numeric',
+    positive: 'validation.positive',
+    integer: 'validation.integer',
+    date: 'validation.date',
+    futureDate: 'validation.futureDate',
+    vin: 'validation.vin',
+    year: 'validation.year',
+    url: 'validation.url',
+    licensePlate: 'validation.licensePlate',
+};
+
 export class Validator {
     constructor() {
         this.rules = new Map();
@@ -46,7 +65,8 @@ export class Validator {
             if (validator) {
                 const isValid = validator(value, ...ruleParams);
                 if (!isValid) {
-                    const message = customMessage || this.messages.get(ruleName) || 'Validation failed';
+                    const key = VALIDATION_MESSAGE_KEYS[ruleName] || 'validation.failed';
+                    const message = customMessage || t(key);
                     errors.push(message);
                 }
             }

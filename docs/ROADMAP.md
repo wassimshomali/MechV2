@@ -30,13 +30,13 @@ Core app scaffold merged to feature branch.
 
 ### A1. Internationalization (i18n) — P0
 
-- [ ] Add i18n system (`src/i18n/` — recommend lightweight custom or `i18next`)
-- [ ] Extract all UI strings from components to locale files
-- [ ] Create `fr-CA.json` (primary) and `en-CA.json` (fallback)
-- [ ] Language switcher in header (default: French)
-- [ ] French labels for all form fields, buttons, errors, notifications
-- [ ] French status labels (scheduled → planifié, completed → terminé, etc.)
-- [ ] Update `index.html` `<html lang="fr-CA">`
+- [x] Add i18n system (`src/i18n/` — recommend lightweight custom or `i18next`)
+- [x] Extract all UI strings from components to locale files
+- [x] Create `fr-CA.json` (primary) and `en-CA.json` (fallback)
+- [x] Language switcher in header (default: French)
+- [x] French labels for all form fields, buttons, errors, notifications
+- [x] French status labels (scheduled → planifié, completed → terminé, etc.)
+- [x] Update `index.html` `<html lang="fr-CA">`
 
 **Acceptance:** Entire UI readable in French with no hardcoded English strings in components.
 
