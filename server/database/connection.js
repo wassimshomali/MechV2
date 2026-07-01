@@ -243,6 +243,14 @@ class DatabaseConnection {
 
     } catch (error) {
       await this.run('ROLLBACK').catch(() => {});
+
+      // Data already exists from a previous partial seed — skip and mark done
+      if (error.code === 'SQLITE_CONSTRAINT') {
+        logger.warn(`Seed skipped (data already exists): ${filename}`);
+        await this.run('INSERT OR IGNORE INTO seeds (filename) VALUES (?)', [filename]);
+        return;
+      }
+
       logger.error(`Seed failed: ${filename}`, error);
       throw error;
     }
