@@ -1,10 +1,15 @@
-export function renderHeader({ title = 'Dashboard', breadcrumb = 'Overview' } = {}) {
+export function renderHeader({ title = 'Dashboard', section = 'Dashboard', breadcrumb = 'Overview' } = {}) {
   return `
     <header class="app-header">
-      <div class="px-6 py-4 flex items-center justify-between gap-4">
-        <div class="min-w-0">
-          <p class="text-xs text-gray-500 dark:text-gray-400 mb-0.5 hidden sm:block">Dashboard / ${breadcrumb}</p>
-          <h1 class="text-2xl font-semibold text-balance truncate">${title}</h1>
+      <div class="px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <button type="button" id="mobileMenuToggle" class="btn btn-icon btn-ghost lg:hidden shrink-0" aria-label="Open menu">
+            <i data-feather="menu"></i>
+          </button>
+          <div class="min-w-0">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-0.5 hidden sm:block">${section} / ${breadcrumb}</p>
+            <h1 class="text-xl sm:text-2xl font-semibold text-balance truncate">${title}</h1>
+          </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <button type="button" id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">

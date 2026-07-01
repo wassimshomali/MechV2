@@ -1,6 +1,6 @@
 import { renderAvatar } from '../common/Avatar.js';
 
-const stats = [
+const defaultStats = [
   {
     label: "Today's Appointments",
     value: '5',
@@ -39,7 +39,7 @@ const stats = [
   },
 ];
 
-const clients = [
+const defaultClients = [
   { name: 'Michael Johnson', time: 'Yesterday', detail: '2018 Toyota Camry — Oil Change' },
   { name: 'Sarah Williams', time: '2 days ago', detail: '2015 Honda CR-V — Brake Service' },
   { name: 'Robert Davis', time: '3 days ago', detail: '2017 Ford F-150 — Tire Rotation' },
@@ -47,20 +47,31 @@ const clients = [
 ];
 
 const quickActions = [
-  { label: 'Add Client', icon: 'user-plus', classes: 'bg-primary-50 text-primary-700 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-300' },
-  { label: 'Add Vehicle', icon: 'truck', classes: 'bg-success-50 text-success-700 hover:bg-success-100 dark:bg-success-900/30 dark:text-success-300' },
-  { label: 'New Appointment', icon: 'calendar', classes: 'bg-info-50 text-info-700 hover:bg-info-100 dark:bg-info-900/30 dark:text-info-300' },
-  { label: 'Create Invoice', icon: 'file-text', classes: 'bg-warning-50 text-warning-700 hover:bg-warning-100 dark:bg-warning-900/30 dark:text-warning-300' },
-  { label: 'Add Inventory', icon: 'package', classes: 'bg-error-50 text-error-700 hover:bg-error-100 dark:bg-error-900/30 dark:text-error-300' },
-  { label: 'Scan QR', icon: 'qr-code', classes: 'bg-secondary-100 text-secondary-700 hover:bg-secondary-200 dark:bg-secondary-800 dark:text-secondary-200' },
+  { label: 'Add Client', icon: 'user-plus', href: '#/clients/new', classes: 'bg-primary-50 text-primary-700 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-300' },
+  { label: 'Add Vehicle', icon: 'truck', href: '#/vehicles/new', classes: 'bg-success-50 text-success-700 hover:bg-success-100 dark:bg-success-900/30 dark:text-success-300' },
+  { label: 'New Appointment', icon: 'calendar', href: '#/appointments', classes: 'bg-info-50 text-info-700 hover:bg-info-100 dark:bg-info-900/30 dark:text-info-300' },
+  { label: 'Create Invoice', icon: 'file-text', href: '#/financial/invoices', classes: 'bg-warning-50 text-warning-700 hover:bg-warning-100 dark:bg-warning-900/30 dark:text-warning-300' },
+  { label: 'Add Inventory', icon: 'package', href: '#/inventory', classes: 'bg-error-50 text-error-700 hover:bg-error-100 dark:bg-error-900/30 dark:text-error-300' },
+  { label: 'Scan QR', icon: 'qr-code', href: '#/clients/scan', classes: 'bg-secondary-100 text-secondary-700 hover:bg-secondary-200 dark:bg-secondary-800 dark:text-secondary-200' },
 ];
 
-const inventory = [
+const defaultInventory = [
   { name: 'Oil Filter — Toyota', part: 'Part #TO-1234', qty: '2 left', level: 'inventory-low', color: 'text-error-500' },
   { name: 'Brake Pads — Front', part: 'Part #BP-F456', qty: '1 left', level: 'inventory-low', color: 'text-error-500' },
   { name: '5W-30 Synthetic Oil', part: 'Part #OIL-5W30', qty: '4 left', level: 'inventory-medium', color: 'text-warning-500' },
   { name: 'Air Filter', part: 'Part #AF-789', qty: '5 left', level: 'inventory-medium', color: 'text-warning-500' },
 ];
+
+function buildStats(data) {
+  if (!data?.stats) return defaultStats;
+  const s = data.stats;
+  return [
+    { ...defaultStats[0], value: String(s.todayAppointments), meta: s.nextAppointment },
+    { ...defaultStats[1], value: s.monthlyRevenue, meta: `${s.revenueGrowth}% from last month` },
+    { ...defaultStats[2], value: String(s.activeClients) },
+    { ...defaultStats[3], value: String(s.lowInventoryItems) },
+  ];
+}
 
 function renderCalendarDays() {
   const days = [
@@ -72,7 +83,7 @@ function renderCalendarDays() {
   return days
     .map((d) => {
       if (typeof d === 'object') {
-        return `<button type="button" class="calendar-day today has-appointment" aria-label="July ${d.day}, 3 appointments">
+        return `<button type="button" class="calendar-day today has-appointment" aria-label="Day ${d.day}, ${d.appointment}">
           <span>${d.day}</span>
           <span class="text-xs text-primary-600 dark:text-primary-400">${d.appointment}</span>
         </button>`;
@@ -82,7 +93,34 @@ function renderCalendarDays() {
     .join('');
 }
 
-export function renderDashboard() {
+function renderStatsSkeleton() {
+  return Array.from({ length: 4 })
+    .map(
+      (_, i) => `
+    <div class="card p-6 stagger-${i + 1}">
+      <div class="skeleton h-4 w-1/2 rounded mb-3"></div>
+      <div class="skeleton h-8 w-1/3 rounded mb-4"></div>
+      <div class="skeleton h-3 w-2/3 rounded"></div>
+    </div>
+  `
+    )
+    .join('');
+}
+
+export function renderDashboard(data = {}) {
+  if (data.loading) {
+    return `
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+        ${renderStatsSkeleton()}
+      </div>
+      <div class="skeleton h-96 rounded-card"></div>
+    `;
+  }
+
+  const stats = buildStats(data);
+  const clients = data.clients || defaultClients;
+  const inventory = data.inventory || defaultInventory;
+
   const statsHtml = stats
     .map(
       (stat) => `
@@ -127,10 +165,10 @@ export function renderDashboard() {
   const actionsHtml = quickActions
     .map(
       (action) => `
-    <button type="button" class="quick-action ${action.classes}">
+    <a href="${action.href}" class="quick-action ${action.classes}">
       <i data-feather="${action.icon}" class="w-6 h-6"></i>
       <span>${action.label}</span>
-    </button>
+    </a>
   `
     )
     .join('');
@@ -162,16 +200,16 @@ export function renderDashboard() {
         <section class="panel animate-fade-in">
           <div class="panel-header">
             <h2 class="panel-title">Appointments</h2>
-            <button type="button" class="btn btn-primary">
+            <a href="#/appointments" class="btn btn-primary">
               <i data-feather="plus"></i>
               New Appointment
-            </button>
+            </a>
           </div>
           <div class="panel-body">
             <div class="grid grid-cols-7 gap-2 mb-4">
               ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => `<div class="text-center text-xs font-medium text-gray-500 uppercase tracking-wide">${d}</div>`).join('')}
             </div>
-            <div class="grid grid-cols-7 gap-2" role="grid" aria-label="July calendar">
+            <div class="grid grid-cols-7 gap-2" role="grid" aria-label="Calendar">
               ${renderCalendarDays()}
             </div>
           </div>
@@ -220,10 +258,10 @@ export function renderDashboard() {
             <div class="w-full aspect-video max-h-48 bg-black/40 rounded-xl mb-4 flex items-center justify-center border border-secondary-700/50">
               <i data-feather="camera" class="w-12 h-12 text-secondary-400"></i>
             </div>
-            <button type="button" class="btn btn-primary w-full">
+            <a href="#/clients/scan" class="btn btn-primary w-full">
               <i data-feather="maximize"></i>
               Open Scanner
-            </button>
+            </a>
           </div>
         </section>
       </div>

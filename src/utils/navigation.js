@@ -1,7 +1,7 @@
 export const navigation = [
   {
     label: 'Dashboard',
-    items: [{ href: '#/', icon: 'home', label: 'Overview', active: true }],
+    items: [{ href: '#/', icon: 'home', label: 'Overview' }],
   },
   {
     label: 'Clients',

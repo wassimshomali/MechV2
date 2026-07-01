@@ -24,7 +24,7 @@ const financialRoutes = require('./routes/financial');
 const dashboardRoutes = require('./routes/dashboard');
 
 // Import middleware
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
 
 class Server {

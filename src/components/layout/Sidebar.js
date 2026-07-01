@@ -1,21 +1,23 @@
 import { navigation } from '../../utils/navigation.js';
+import { isNavActive } from '../../utils/routes.js';
 import { renderAvatar } from '../common/Avatar.js';
 
-export function renderSidebar() {
+export function renderSidebar(currentPath = '/') {
   const navHtml = navigation
     .map(
       (section) => `
       <div class="px-3 mb-4">
         <div class="nav-overline sidebar-text px-3 mb-2">${section.label}</div>
         ${section.items
-          .map(
-            (item) => `
-          <a href="${item.href}" class="nav-link ${item.active ? 'active' : ''}" ${item.active ? 'aria-current="page"' : ''}>
+          .map((item) => {
+            const active = isNavActive(item.href, currentPath);
+            return `
+          <a href="${item.href}" class="nav-link ${active ? 'active' : ''}" ${active ? 'aria-current="page"' : ''}>
             <i data-feather="${item.icon}" class="shrink-0"></i>
             <span class="sidebar-text truncate">${item.label}</span>
           </a>
-        `
-          )
+        `;
+          })
           .join('')}
       </div>
     `
@@ -25,12 +27,15 @@ export function renderSidebar() {
   return `
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="h-16 px-4 flex items-center justify-between border-b border-secondary-800 shrink-0">
-        <div class="flex items-center gap-2 min-w-0">
+        <a href="#/" class="flex items-center gap-2 min-w-0">
           <i data-feather="tool" class="logo-icon w-7 h-7 text-primary-400 shrink-0"></i>
           <span class="logo-text text-lg font-bold tracking-tight truncate">MoMech</span>
-        </div>
-        <button type="button" id="toggleSidebar" class="btn btn-icon text-secondary-400 hover:text-white hover:bg-white/5 shrink-0" aria-label="Toggle sidebar" aria-expanded="true">
+        </a>
+        <button type="button" id="toggleSidebar" class="btn btn-icon text-secondary-400 hover:text-white hover:bg-white/5 shrink-0 hidden lg:inline-flex" aria-label="Toggle sidebar" aria-expanded="true">
           <i data-feather="chevron-left"></i>
+        </button>
+        <button type="button" id="closeSidebar" class="btn btn-icon text-secondary-400 hover:text-white hover:bg-white/5 shrink-0 lg:hidden" aria-label="Close menu">
+          <i data-feather="x"></i>
         </button>
       </div>
 
@@ -59,30 +64,53 @@ export function renderSidebar() {
   `;
 }
 
+function closeMobileSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar?.classList.remove('mobile-open');
+  overlay?.classList.add('hidden');
+  overlay?.setAttribute('aria-hidden', 'true');
+}
+
+export function openMobileSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar?.classList.add('mobile-open');
+  overlay?.classList.remove('hidden');
+  overlay?.setAttribute('aria-hidden', 'false');
+}
+
 export function initSidebar() {
   const sidebar = document.getElementById('sidebar');
   const toggle = document.getElementById('toggleSidebar');
+  const closeBtn = document.getElementById('closeSidebar');
   const overlay = document.getElementById('sidebarOverlay');
 
-  if (!sidebar || !toggle) return;
+  if (!sidebar) return;
 
   const updateToggleIcon = () => {
     const collapsed = sidebar.classList.contains('collapsed');
-    const icon = toggle.querySelector('i');
+    const icon = toggle?.querySelector('i');
     if (icon) {
       icon.setAttribute('data-feather', collapsed ? 'chevron-right' : 'chevron-left');
     }
-    toggle.setAttribute('aria-expanded', String(!collapsed));
+    toggle?.setAttribute('aria-expanded', String(!collapsed));
+    if (window.feather) window.feather.replace();
   };
 
-  toggle.addEventListener('click', () => {
+  toggle?.addEventListener('click', () => {
     sidebar.classList.toggle('collapsed');
     updateToggleIcon();
-    if (window.feather) window.feather.replace();
   });
 
-  overlay?.addEventListener('click', () => {
-    sidebar.classList.remove('mobile-open');
-    overlay.classList.add('hidden');
+  closeBtn?.addEventListener('click', closeMobileSidebar);
+  overlay?.addEventListener('click', closeMobileSidebar);
+
+  sidebar.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth < 1024) closeMobileSidebar();
+    });
   });
 }
+
+export { closeMobileSidebar };

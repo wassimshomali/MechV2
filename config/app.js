@@ -274,11 +274,7 @@ const config = {
 
 // Export for different environments
 if (typeof module !== 'undefined' && module.exports) {
-  // Node.js environment
   module.exports = config;
-} else {
-  // Browser environment
+} else if (typeof window !== 'undefined') {
   window.MoMechConfig = config;
 }
-
-export default config;

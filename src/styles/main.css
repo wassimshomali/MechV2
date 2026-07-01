@@ -57,7 +57,18 @@
   .sidebar {
     @apply flex flex-col bg-secondary-900 text-white border-r border-secondary-800;
     width: var(--sidebar-width);
-    transition: width var(--transition-duration) var(--ease-out);
+    transition: width var(--transition-duration) var(--ease-out), transform var(--transition-duration) var(--ease-out);
+  }
+
+  @media (max-width: 1023px) {
+    .sidebar {
+      @apply fixed inset-y-0 left-0 z-50 -translate-x-full;
+      width: var(--sidebar-width);
+    }
+
+    .sidebar.mobile-open {
+      @apply translate-x-0;
+    }
   }
 
   .sidebar.collapsed {
