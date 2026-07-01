@@ -43,10 +43,10 @@ class Server {
         contentSecurityPolicy: {
           directives: {
             defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://cdn.jsdelivr.net"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
             imgSrc: ["'self'", "data:", "https:", "http:"],
-            fontSrc: ["'self'", "https:", "data:"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
             connectSrc: ["'self'", "http://localhost:3001"],
             mediaSrc: ["'self'"],
             objectSrc: ["'none'"],

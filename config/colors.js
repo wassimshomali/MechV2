@@ -193,11 +193,7 @@ const colorUtils = {
 
 // Export for different environments
 if (typeof module !== 'undefined' && module.exports) {
-  // Node.js environment
   module.exports = { colors, cssVariables, colorUtils };
-} else {
-  // Browser environment
+} else if (typeof window !== 'undefined') {
   window.MoMechColors = { colors, cssVariables, colorUtils };
 }
-
-export { colors, cssVariables, colorUtils };
