@@ -17,6 +17,7 @@ export const ENDPOINTS = {
   },
   VEHICLES: {
     BASE: '/vehicles',
+    SERVICE_HISTORY: '/vehicles/service-history',
   },
   APPOINTMENTS: {
     BASE: '/appointments',
