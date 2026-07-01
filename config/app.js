@@ -3,6 +3,8 @@
  * Central configuration for the entire application
  */
 
+const ports = require('./ports');
+
 const APP_CONFIG = {
   // Application metadata
   APP_NAME: 'MoMech',
@@ -16,9 +18,9 @@ const APP_CONFIG = {
   
   // Server configuration
   SERVER: {
-    PORT: process.env.PORT || 3001,
-    HOST: process.env.HOST || 'localhost',
-    CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000'
+    PORT: ports.SERVER_PORT,
+    HOST: ports.HOST,
+    CORS_ORIGIN: process.env.CORS_ORIGIN || ports.CLIENT_URL
   },
 
   // Database configuration
@@ -274,11 +276,7 @@ const config = {
 
 // Export for different environments
 if (typeof module !== 'undefined' && module.exports) {
-  // Node.js environment
   module.exports = config;
-} else {
-  // Browser environment
+} else if (typeof window !== 'undefined') {
   window.MoMechConfig = config;
 }
-
-export default config;

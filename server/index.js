@@ -12,6 +12,7 @@ const fs = require('fs');
 
 // Import configuration
 const config = require('../config/app');
+const ports = require('../config/ports');
 const dbConnection = require('./database/connection');
 
 // Import routes
@@ -24,7 +25,7 @@ const financialRoutes = require('./routes/financial');
 const dashboardRoutes = require('./routes/dashboard');
 
 // Import middleware
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
 
 class Server {
@@ -43,11 +44,11 @@ class Server {
         contentSecurityPolicy: {
           directives: {
             defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://cdn.jsdelivr.net"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
             imgSrc: ["'self'", "data:", "https:", "http:"],
-            fontSrc: ["'self'", "https:", "data:"],
-            connectSrc: ["'self'", "http://localhost:3001"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+            connectSrc: ["'self'", ports.SERVER_URL, ports.CLIENT_URL],
             mediaSrc: ["'self'"],
             objectSrc: ["'none'"],
             frameSrc: ["'none'"]
@@ -193,7 +194,7 @@ class Server {
         logger.info(`🗄️  Database: ${config.DATABASE.PATH}`);
         
         if (config.ENVIRONMENT === 'development') {
-          logger.info(`🔧 Frontend dev server: http://localhost:3000`);
+          logger.info(`🔧 Frontend dev server: ${ports.CLIENT_URL}`);
         }
       });
 
