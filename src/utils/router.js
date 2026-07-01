@@ -26,6 +26,7 @@ export function createRouter({ onRouteChange }) {
     start() {
       if (!window.location.hash) {
         window.location.hash = '/';
+        return null;
       }
       return resolve();
     },

@@ -243,6 +243,7 @@ if (APP_CONFIG.ENVIRONMENT === 'production') {
   // Development-specific settings
   APP_CONFIG.DEBUG = true;
   APP_CONFIG.LOGGING.LEVEL = 'debug';
+  APP_CONFIG.LOGGING.ENABLE_FILE = false;
   APP_CONFIG.SECURITY.RATE_LIMIT_MAX_REQUESTS = 1000;
 }
 
