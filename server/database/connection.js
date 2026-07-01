@@ -36,9 +36,12 @@ class DatabaseConnection {
       // Run migrations
       await this.runMigrations();
 
-      // Seed database if in development
+      // Seed database if empty in development
       if (config.ENVIRONMENT === 'development') {
-        await this.runSeeds();
+        const clientCount = await this.get('SELECT COUNT(*) as count FROM clients');
+        if (!clientCount?.count) {
+          await this.runSeeds();
+        }
       }
 
       this.isInitialized = true;
@@ -146,6 +149,21 @@ class DatabaseConnection {
   }
 
   /**
+   * Execute multiple SQL statements (handles triggers and complex SQL)
+   */
+  async exec(sql) {
+    return new Promise((resolve, reject) => {
+      this.db.exec(sql, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  /**
    * Execute a single migration
    */
   async executeMigration(filename) {
@@ -153,18 +171,9 @@ class DatabaseConnection {
       const filePath = path.join(this.migrationPath, filename);
       const sql = await fs.readFile(filePath, 'utf8');
 
-      // Execute migration in a transaction
       await this.run('BEGIN TRANSACTION');
-      
-      // Split and execute multiple statements
-      const statements = sql.split(';').filter(stmt => stmt.trim());
-      for (const statement of statements) {
-        if (statement.trim()) {
-          await this.run(statement);
-        }
-      }
+      await this.exec(sql);
 
-      // Record migration
       await this.run(
         'INSERT INTO migrations (filename) VALUES (?)',
         [filename]
@@ -174,7 +183,7 @@ class DatabaseConnection {
       logger.info(`Migration executed: ${filename}`);
 
     } catch (error) {
-      await this.run('ROLLBACK');
+      await this.run('ROLLBACK').catch(() => {});
       logger.error(`Migration failed: ${filename}`, error);
       throw error;
     }
@@ -218,15 +227,7 @@ class DatabaseConnection {
     try {
       const filePath = path.join(this.seedPath, filename);
       const sql = await fs.readFile(filePath, 'utf8');
-
-      // Execute seed statements
-      const statements = sql.split(';').filter(stmt => stmt.trim());
-      for (const statement of statements) {
-        if (statement.trim()) {
-          await this.run(statement);
-        }
-      }
-
+      await this.exec(sql);
       logger.info(`Seed executed: ${filename}`);
 
     } catch (error) {

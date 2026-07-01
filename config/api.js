@@ -5,7 +5,7 @@
 
 const API_CONFIG = {
   // Base configuration
-  BASE_URL: process.env.API_BASE_URL || 'http://localhost:3001',
+  BASE_URL: (typeof process !== 'undefined' && process.env && process.env.API_BASE_URL) || 'http://localhost:3001',
   API_VERSION: 'v1',
   TIMEOUT: 10000, // 10 seconds
   
@@ -265,11 +265,7 @@ const config = {
 
 // Export for different environments
 if (typeof module !== 'undefined' && module.exports) {
-  // Node.js environment
   module.exports = config;
-} else {
-  // Browser environment
+} else if (typeof window !== 'undefined') {
   window.MoMechAPI = config;
 }
-
-export default config;
