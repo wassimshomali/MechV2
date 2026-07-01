@@ -3,9 +3,11 @@
  * Centralized API endpoints and configuration
  */
 
+const ports = require('./ports');
+
 const API_CONFIG = {
   // Base configuration
-  BASE_URL: (typeof process !== 'undefined' && process.env && process.env.API_BASE_URL) || 'http://localhost:3001',
+  BASE_URL: process.env.API_BASE_URL || ports.SERVER_URL,
   API_VERSION: 'v1',
   TIMEOUT: 10000, // 10 seconds
   

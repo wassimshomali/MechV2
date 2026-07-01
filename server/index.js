@@ -12,6 +12,7 @@ const fs = require('fs');
 
 // Import configuration
 const config = require('../config/app');
+const ports = require('../config/ports');
 const dbConnection = require('./database/connection');
 
 // Import routes
@@ -47,7 +48,7 @@ class Server {
             scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
             imgSrc: ["'self'", "data:", "https:", "http:"],
             fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
-            connectSrc: ["'self'", "http://localhost:3001"],
+            connectSrc: ["'self'", ports.SERVER_URL, ports.CLIENT_URL],
             mediaSrc: ["'self'"],
             objectSrc: ["'none'"],
             frameSrc: ["'none'"]
@@ -193,7 +194,7 @@ class Server {
         logger.info(`🗄️  Database: ${config.DATABASE.PATH}`);
         
         if (config.ENVIRONMENT === 'development') {
-          logger.info(`🔧 Frontend dev server: http://localhost:3000`);
+          logger.info(`🔧 Frontend dev server: ${ports.CLIENT_URL}`);
         }
       });
 

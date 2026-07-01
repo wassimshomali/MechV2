@@ -1,7 +1,9 @@
 /**
- * Browser-safe API configuration
+ * Browser-safe API configuration (generated from config/ports.js)
  */
-export const API_BASE = 'http://localhost:3001/api/v1';
+import { RUNTIME } from './runtime.js';
+
+export const API_BASE = RUNTIME.API_BASE;
 export const TIMEOUT = 10000;
 
 export const ENDPOINTS = {

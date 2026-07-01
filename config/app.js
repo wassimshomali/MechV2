@@ -3,6 +3,8 @@
  * Central configuration for the entire application
  */
 
+const ports = require('./ports');
+
 const APP_CONFIG = {
   // Application metadata
   APP_NAME: 'MoMech',
@@ -16,9 +18,9 @@ const APP_CONFIG = {
   
   // Server configuration
   SERVER: {
-    PORT: process.env.PORT || 3001,
-    HOST: process.env.HOST || 'localhost',
-    CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000'
+    PORT: ports.SERVER_PORT,
+    HOST: ports.HOST,
+    CORS_ORIGIN: process.env.CORS_ORIGIN || ports.CLIENT_URL
   },
 
   // Database configuration

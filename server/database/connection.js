@@ -36,12 +36,9 @@ class DatabaseConnection {
       // Run migrations
       await this.runMigrations();
 
-      // Seed database if empty in development
+      // Run pending seeds in development (tracked per file)
       if (config.ENVIRONMENT === 'development') {
-        const clientCount = await this.get('SELECT COUNT(*) as count FROM clients');
-        if (!clientCount?.count) {
-          await this.runSeeds();
-        }
+        await this.runSeeds();
       }
 
       this.isInitialized = true;
@@ -194,26 +191,36 @@ class DatabaseConnection {
    */
   async runSeeds() {
     try {
+      await this.run(`
+        CREATE TABLE IF NOT EXISTS seeds (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          filename TEXT NOT NULL UNIQUE,
+          executed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      const executedSeeds = await this.all('SELECT filename FROM seeds ORDER BY id');
+      const executedFiles = executedSeeds.map((s) => s.filename);
+
       let seedFiles = [];
       try {
         const files = await fs.readdir(this.seedPath);
-        seedFiles = files
-          .filter(file => file.endsWith('.sql'))
-          .sort();
+        seedFiles = files.filter((file) => file.endsWith('.sql')).sort();
       } catch (error) {
         logger.warn('No seed directory found, skipping seeds');
         return;
       }
 
       for (const filename of seedFiles) {
-        await this.executeSeed(filename);
+        if (!executedFiles.includes(filename)) {
+          await this.executeSeed(filename);
+        }
       }
 
-      logger.info(`Seeds completed. Total: ${seedFiles.length}`);
+      logger.info(`Seeds completed. Total: ${seedFiles.length}, Executed: ${seedFiles.length - executedFiles.length}`);
 
     } catch (error) {
       logger.error('Seeding failed:', error);
-      // Don't throw error for seeds in development
       if (config.ENVIRONMENT !== 'development') {
         throw error;
       }
@@ -227,10 +234,15 @@ class DatabaseConnection {
     try {
       const filePath = path.join(this.seedPath, filename);
       const sql = await fs.readFile(filePath, 'utf8');
+
+      await this.run('BEGIN TRANSACTION');
       await this.exec(sql);
+      await this.run('INSERT INTO seeds (filename) VALUES (?)', [filename]);
+      await this.run('COMMIT');
       logger.info(`Seed executed: ${filename}`);
 
     } catch (error) {
+      await this.run('ROLLBACK').catch(() => {});
       logger.error(`Seed failed: ${filename}`, error);
       throw error;
     }
